@@ -218,8 +218,12 @@ class _Market extends StatelessWidget {
                 onTap: () => onTake(c),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(6, 8, 6, 8),
-                  child: CustomPaint(
-                    painter: _ColumnPainter(game, game.columns[c], scheme),
+                  // SizedBox.expand : sans enfant ni taille, un CustomPaint
+                  // mesure 0×0 et les sachets ne s'affichent pas.
+                  child: SizedBox.expand(
+                    child: CustomPaint(
+                      painter: _ColumnPainter(game, game.columns[c], scheme),
+                    ),
                   ),
                 ),
               ),

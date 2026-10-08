@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'game_page.dart';
 import 'painter.dart';
+import 'palette.dart';
 import 'puzzle.dart';
 
 /// Écran de préparation : choix de la photo et des réglages.
@@ -22,6 +23,7 @@ class _FourmisPageState extends State<FourmisPage> {
 
   String _sizeLabel = 'Petite';
   int _colors = 6;
+  ColorContrast _contrast = ColorContrast.contrasted;
   int _slots = 5;
 
   /// Image source décodée (RGBA), conservée pour recalculer à chaque réglage.
@@ -41,17 +43,21 @@ class _FourmisPageState extends State<FourmisPage> {
     final width = _sizes[_sizeLabel]!;
     final rgba = _rgba;
     setState(() {
-      if (rgba == null) {
-        _puzzle = _limitColors(generateSamplePuzzle(width: width, seed: _sampleSeed));
-      } else {
-        _puzzle = buildPuzzleFromRgba(
-          rgba: rgba,
-          srcWidth: _srcW,
-          srcHeight: _srcH,
-          targetWidth: width,
-          colorCount: _colors,
-        );
-      }
+      final base = rgba == null
+          ? _limitColors(generateSamplePuzzle(width: width, seed: _sampleSeed))
+          : buildPuzzleFromRgba(
+              rgba: rgba,
+              srcWidth: _srcW,
+              srcHeight: _srcH,
+              targetWidth: width,
+              colorCount: _colors,
+            );
+      _puzzle = PixelPuzzle(
+        width: base.width,
+        height: base.height,
+        cells: base.cells,
+        palette: separatePalette(base.palette, _contrast),
+      );
     });
   }
 
@@ -184,6 +190,16 @@ class _FourmisPageState extends State<FourmisPage> {
             onChanged: (v) => setState(() => _colors = v.round()),
             onChangeEnd: (_) => _rebuild(),
           ),
+          SegmentedButton<ColorContrast>(
+            segments: [for (final c in ColorContrast.values) ButtonSegment(value: c, label: Text(c.label))],
+            selected: {_contrast},
+            showSelectedIcon: false,
+            onSelectionChanged: (v) {
+              _contrast = v.first;
+              _rebuild();
+            },
+          ),
+          const SizedBox(height: 16),
           Text('Emplacements : $_slots', style: text.titleSmall),
           Slider(
             value: _slots.toDouble(),

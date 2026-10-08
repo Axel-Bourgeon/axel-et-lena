@@ -31,6 +31,7 @@ Dernière mise à jour : 2026-10-08
 - Un sachet ouvert libère ses fourmis une à une ; chacune va au pixel accessible le plus proche de sa couleur (BFS), le ramène, et le sachet se libère quand toutes sont revenues.
 - Accessible = pixel touchant une case vide reliée à l'extérieur. Les pixels non accessibles sont grisés.
 - Ordre des sachets généré « de l'extérieur vers l'intérieur » (profondeur + bruit) pour que la partie soit faisable.
+- Palette « écartée » (2026-10-08) : après le k-means, les couleurs sont repoussées les unes des autres dans Oklab (clarté peu pondérée → écarts de teinte), lib/games/fourmis/palette.dart. Choix Fidèles / Contrastées (défaut) / Extrêmes.
 - Blocage (tous emplacements pris, aucune fourmi ne peut avancer) → « Un emplacement de plus » (max 8) ou recommencer.
 
 ## État
