@@ -40,7 +40,7 @@ Dernière mise à jour : 2026-10-08
 - [x] Jeu Fourmis v0.1 + tests du moteur (joueur automatique)
 - [x] Dépôt public, code déposé, secret `SIGNING_KEYSTORE_B64` en place
 - [x] Passage sur Claude Code (push direct), workflow CI recréé
-- [ ] Premier build CI vert
+- [x] Premier build CI vert (build-1, 2026-10-08 : 8 tests OK, APK signé avec la clé stable)
 - [ ] Retours d'Axel et Léna après test sur téléphone
 
 ## Idées / prochaines étapes

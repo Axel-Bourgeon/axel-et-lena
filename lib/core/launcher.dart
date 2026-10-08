@@ -61,12 +61,12 @@ class Launcher {
         );
       }
       if (!ok) {
-        _snack(context, "Impossible d'ouvrir HabitKit ni le Play Store.");
+        if (context.mounted) _snack(context, "Impossible d'ouvrir HabitKit ni le Play Store.");
       }
     } on PlatformException {
-      _snack(context, "Impossible d'ouvrir HabitKit.");
+      if (context.mounted) _snack(context, "Impossible d'ouvrir HabitKit.");
     } on MissingPluginException {
-      _snack(context, "Impossible d'ouvrir HabitKit.");
+      if (context.mounted) _snack(context, "Impossible d'ouvrir HabitKit.");
     }
   }
 
@@ -90,12 +90,12 @@ class Launcher {
 
       final bool ok = await _launchExternal(url);
       if (!ok) {
-        _snack(context, "Impossible d'ouvrir Discord.");
+        if (context.mounted) _snack(context, "Impossible d'ouvrir Discord.");
       }
     } on PlatformException {
-      _snack(context, "Impossible d'ouvrir Discord.");
+      if (context.mounted) _snack(context, "Impossible d'ouvrir Discord.");
     } on MissingPluginException {
-      _snack(context, "Impossible d'ouvrir Discord.");
+      if (context.mounted) _snack(context, "Impossible d'ouvrir Discord.");
     }
   }
 }
