@@ -1,0 +1,50 @@
+# Axel & Léna — progression et objectifs (tenu par Claude)
+
+Dernière mise à jour : 2026-10-08
+
+## Principe de travail
+
+- Axel veut agir le moins possible : Claude fait tout (code, compilation, livraison) et ne sollicite Axel que pour ce qui est impossible autrement.
+- Travail dans une session **Claude Code** sur le PC d'Axel, clone dans `D:\ClaudeCode\axel-et-lena`, `gh` connecté au compte `Axel-Bourgeon` → push direct sur `main`.
+- Livraison : APK compilé par GitHub Actions (`.github/workflows/build.yml`) → release GitHub `build-N`.
+  - Lien de téléchargement stable : https://github.com/Axel-Bourgeon/axel-et-lena/releases/latest/download/axel-et-lena.apk
+
+## Contraintes techniques
+
+- Pas de Flutter installé en local → compilation uniquement en CI (Java 21 présent en local).
+- Le dossier `android/` n'est pas versionné : `flutter create` en CI puis `scripts/patch_android.py` (nom de l'appli, `<queries>` HabitKit/Discord, MainActivity avec canal `axel_lena/launcher`).
+- Signature : keystore stable dans le secret GitHub `SIGNING_KEYSTORE_B64` (copié en `~/.android/debug.keystore` en CI) → les mises à jour s'installent par-dessus sans désinstaller.
+- L'ancien contournement Cowork (archive `incoming/app.tar.gz` déposée à la main) n'est plus utilisé.
+
+## Décisions
+
+- Stack : Flutter (Dart), Material 3, thème personnalisable (couleur, clair/sombre).
+- Identifiant Android : `com.axelbourgeon.axel_lena` (ne plus changer, sinon les mises à jour ne s'installent plus par-dessus).
+- HabitKit : package `com.roehl.habitkit` (repli : Play Store).
+- Discord : serveur « Léna et Axel », id `1378749282177515722`, ouvert via `https://discord.com/channels/<id>` dans l'appli Discord (`com.discord`). Modifiable dans Réglages.
+- Ajouter une sous-appli = une entrée dans `lib/apps/registry.dart`.
+
+## Jeu « Fourmis » — règles retenues (v0.1)
+
+- Photo (galerie/appareil) ou image « Surprise » générée → pixellisée (22/30/40 de large) → k-means à 3–10 couleurs.
+- Sachets répartis en 4 colonnes ; seul le sachet du dessus de chaque colonne est prenable. 5 emplacements par défaut (3–7).
+- Un sachet ouvert libère ses fourmis une à une ; chacune va au pixel accessible le plus proche de sa couleur (BFS), le ramène, et le sachet se libère quand toutes sont revenues.
+- Accessible = pixel touchant une case vide reliée à l'extérieur. Les pixels non accessibles sont grisés.
+- Ordre des sachets généré « de l'extérieur vers l'intérieur » (profondeur + bruit) pour que la partie soit faisable.
+- Blocage (tous emplacements pris, aucune fourmi ne peut avancer) → « Un emplacement de plus » (max 8) ou recommencer.
+
+## État
+
+- [x] Ossature appli : accueil en tuiles par catégories, réglages, masquage de tuiles
+- [x] Boutons HabitKit et Discord
+- [x] Jeu Fourmis v0.1 + tests du moteur (joueur automatique)
+- [x] Dépôt public, code déposé, secret `SIGNING_KEYSTORE_B64` en place
+- [x] Passage sur Claude Code (push direct), workflow CI recréé
+- [ ] Premier build CI vert
+- [ ] Retours d'Axel et Léna après test sur téléphone
+
+## Idées / prochaines étapes
+
+- Fourmis : sauvegarde de la partie en cours, sons/vibrations légers, niveaux de difficulté, galerie des images terminées.
+- Jeux à deux (même téléphone) : à définir avec Axel et Léna.
+- Icône d'appli personnalisée.
