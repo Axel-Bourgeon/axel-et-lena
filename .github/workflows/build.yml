@@ -49,7 +49,7 @@ jobs:
       # le téléchargement fait par Gradle échoue parfois (archive tronquée).
       - name: Install Android NDK
         run: |
-          NDK=$(grep -rhoP 'ndkVersion\s*(:\s*String\s*)?=\s*"\K[0-9.]+' "$FLUTTER_ROOT/packages/flutter_tools/gradle" | head -n1)
+          NDK=$(grep -rhoP 'ndkVersion\s*(:\s*String\s*)?=\s*"\K[0-9.]+' "$FLUTTER_ROOT/packages/flutter_tools/gradle" | sort -V | tail -n1)
           echo "NDK demandé par Flutter : ${NDK:-inconnu}"
           [ -z "$NDK" ] && exit 0
           [ -d "$ANDROID_HOME/ndk/$NDK" ] && exit 0
