@@ -4,6 +4,7 @@ import '../core/launcher.dart';
 import '../core/settings.dart';
 import '../games/airhockey/airhockey_page.dart';
 import '../games/fourmis/fourmis_page.dart';
+import '../games/picross/picross_page.dart';
 import '../games/pipopipette/pipopipette_page.dart';
 import '../games/puissance4/puissance4_page.dart';
 import '../games/taquin/taquin_page.dart';
@@ -49,6 +50,18 @@ List<SubApp> buildRegistry() {
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const FourmisPage()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'picross',
+      title: 'Picross',
+      subtitle: 'Retrouver une photo case par case',
+      icon: Icons.grid_4x4_outlined,
+      category: TileCategory.soloGames,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const PicrossPage()),
         );
       },
     ),
