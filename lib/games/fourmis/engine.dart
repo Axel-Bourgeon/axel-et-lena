@@ -22,8 +22,8 @@ class Bag {
   /// Fourmis déjà sorties du sachet.
   int released = 0;
 
-  /// Fourmis revenues (pixel livré).
-  int returned = 0;
+  /// Fourmis ayant récupéré leur pixel (en route vers la fourmilière ou arrivées).
+  int collected = 0;
 
   /// Vrai si la dernière recherche n'a trouvé aucun pixel accessible.
   bool blocked = false;
@@ -32,19 +32,24 @@ class Bag {
 
   int get remainingInBag => size - released;
   bool get exhausted => released >= size;
-  bool get done => returned >= size;
+  /// Toutes les fourmis ont leur pixel : le sachet peut disparaître sans
+  /// attendre qu'elles soient rentrées à la fourmilière.
+  bool get done => collected >= size;
 }
 
 enum AntPhase { going, eating, returning }
 
 class Ant {
-  Ant({required this.bag, required this.slot, required this.target, required this.path})
+  Ant({required this.bag, required this.slot, required this.target, required this.standCell, required this.path})
       : x = path.first.x,
         y = path.first.y;
 
   final Bag bag;
   final int slot;
   final int target;
+
+  /// Case vide (grille étendue) d'où la fourmi mange son pixel.
+  final int standCell;
   List<Pt> path;
   int segment = 0;
   double x;
@@ -128,6 +133,10 @@ class FourmisGame {
 
   bool get canAddSlot => slots.length < maxSlots;
 
+  /// Trou de fourmilière commun, juste sous l'image : les fourmis y
+  /// rapportent leurs pixels.
+  Pt get nest => Pt(width / 2, height + 0.85);
+
   Pt spawnFor(int slot) {
     final sp = spawnPoints;
     if (sp != null && slot < sp.length) return sp[slot];
@@ -192,18 +201,16 @@ class FourmisGame {
           if (ant.eatTimer <= 0) {
             _removeCell(ant.target);
             ant.carrying = true;
+            ant.bag.collected++;
             ant.phase = AntPhase.returning;
-            ant.path = ant.path.reversed.toList();
+            ant.path = _pathToNest(ant);
             ant.segment = 0;
           }
         case AntPhase.returning:
           if (_advance(ant, returnSpeed * dt)) finished.add(ant);
       }
     }
-    for (final ant in finished) {
-      ants.remove(ant);
-      ant.bag.returned++;
-    }
+    ants.removeWhere(finished.contains);
 
     // Libère les emplacements des sachets terminés.
     for (int s = 0; s < slots.length; s++) {
@@ -380,7 +387,39 @@ class FourmisGame {
     // La fourmi s'arrête au bord du pixel cible.
     final last = path.last;
     path.add(Pt((last.x + tx + 0.5) / 2, (last.y + ty + 0.5) / 2));
-    return Ant(bag: bag, slot: slot, target: foundCell, path: path);
+    return Ant(bag: bag, slot: slot, target: foundCell, standCell: foundFrom, path: path);
+  }
+
+  /// Chemin de la fourmi (qui vient de manger) jusqu'à la fourmilière. Les
+  /// cases vides ne font que s'agrandir, donc un chemin calculé reste valable.
+  List<Pt> _pathToNest(Ant ant) {
+    final nestG = _g(nest.x.floor().clamp(-1, width).toInt(), height);
+    final prev = List<int>.filled(_gw * _gh, -2);
+    final queue = Queue<int>()..add(ant.standCell);
+    prev[ant.standCell] = -1;
+    while (queue.isNotEmpty && prev[nestG] == -2) {
+      final g = queue.removeFirst();
+      final x = g % _gw - 1, y = g ~/ _gw - 1;
+      for (final d in _dirs) {
+        final nx = x + d[0], ny = y + d[1];
+        if (!_walkable(nx, ny)) continue;
+        final ng = _g(nx, ny);
+        if (prev[ng] != -2) continue;
+        prev[ng] = g;
+        queue.add(ng);
+      }
+    }
+    final cells = <int>[];
+    if (prev[nestG] != -2) {
+      for (int g = nestG; g != -1; g = prev[g]) {
+        cells.add(g);
+      }
+    }
+    return <Pt>[
+      Pt(ant.x, ant.y),
+      for (final g in cells.reversed) Pt(g % _gw - 1 + 0.5, g ~/ _gw - 1 + 0.5),
+      nest,
+    ];
   }
 
   // ---------------------------------------------------------------------------

@@ -28,7 +28,7 @@ Dernière mise à jour : 2026-10-08
 
 - Photo (galerie/appareil) ou image « Surprise » générée → pixellisée (22/30/40 de large) → k-means à 3–10 couleurs.
 - Sachets répartis en 4 colonnes ; seul le sachet du dessus de chaque colonne est prenable. 5 emplacements par défaut (3–7).
-- Un sachet ouvert libère ses fourmis une à une ; chacune va au pixel accessible le plus proche de sa couleur (BFS), le ramène, et le sachet se libère quand toutes sont revenues.
+- Un sachet ouvert libère ses fourmis une à une ; chacune va au pixel accessible le plus proche de sa couleur (BFS), puis le rapporte au trou de fourmilière commun sous l'image (2026-10-09). Le sachet disparaît dès que toutes ses fourmis ont leur pixel, sans attendre leur retour.
 - Accessible = pixel touchant une case vide reliée à l'extérieur. Les pixels non accessibles sont grisés.
 - Ordre des sachets généré « de l'extérieur vers l'intérieur » (profondeur + bruit) pour que la partie soit faisable.
 - Palette « écartée » (2026-10-08) : après le k-means, les couleurs sont repoussées les unes des autres dans Oklab (clarté peu pondérée → écarts de teinte), lib/games/fourmis/palette.dart. Choix Fidèles / Contrastées (défaut) / Extrêmes.

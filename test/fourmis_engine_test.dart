@@ -79,6 +79,27 @@ void main() {
     }
   });
 
+  test('le sachet se libère dès que ses fourmis ont leur pixel', () {
+    final puzzle = generateSamplePuzzle(width: 22, seed: 4);
+    final game = FourmisGame(source: puzzle, seed: 4);
+    expect(game.takeFromColumn(0), isTrue);
+    final bag = game.slots[0]!;
+    for (int i = 0; i < 20000 && game.slots[0] == bag; i++) {
+      game.update(1 / 60);
+    }
+    expect(game.slots[0], isNull);
+    expect(bag.collected, bag.size);
+    // Ses fourmis sont encore en chemin vers la fourmilière.
+    final carriers = game.ants.where((a) => a.bag == bag).toList();
+    expect(carriers, isNotEmpty);
+    expect(carriers.every((a) => a.carrying), isTrue);
+    // Puis elles finissent toutes par rentrer.
+    for (int i = 0; i < 20000 && game.ants.any((a) => a.bag == bag); i++) {
+      game.update(1 / 60);
+    }
+    expect(game.ants.where((a) => a.bag == bag), isEmpty);
+  });
+
   for (final seed in [1, 2, 3]) {
     test('une partie complète se termine (graine $seed)', () {
       final puzzle = generateSamplePuzzle(width: 22, seed: seed);

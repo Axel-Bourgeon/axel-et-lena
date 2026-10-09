@@ -53,8 +53,28 @@ class GamePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     _paintBoard(canvas);
+    _paintNest(canvas);
     _paintSlots(canvas);
     _paintAnts(canvas);
+  }
+
+  /// Trou de fourmilière : petit monticule de terre avec une entrée sombre.
+  void _paintNest(Canvas canvas) {
+    final c = layout.toPx(game.nest.x, game.nest.y);
+    final w = math.max(26.0, layout.cell * 3.2);
+    final h = w * 0.42;
+    canvas.drawOval(
+      Rect.fromCenter(center: c, width: w, height: h),
+      Paint()..color = const Color(0xFFB08A5E),
+    );
+    canvas.drawOval(
+      Rect.fromCenter(center: c.translate(0, -h * 0.08), width: w * 0.62, height: h * 0.55),
+      Paint()..color = const Color(0xFF8A6642),
+    );
+    canvas.drawOval(
+      Rect.fromCenter(center: c.translate(0, -h * 0.02), width: w * 0.38, height: h * 0.34),
+      Paint()..color = const Color(0xFF2B2118),
+    );
   }
 
   void _paintBoard(Canvas canvas) {
@@ -123,13 +143,18 @@ class GamePainter extends CustomPainter {
 
   void _paintAnts(Canvas canvas) {
     final len = math.max(7.0, math.min(layout.cell * 1.05, 16.0));
+    final nest = game.nest;
     for (final ant in game.ants) {
       final pos = layout.toPx(ant.x, ant.y);
+      // Rapetisse en entrant dans la fourmilière.
+      final shrink = ant.phase == AntPhase.returning
+          ? (math.sqrt(math.pow(ant.x - nest.x, 2) + math.pow(ant.y - nest.y, 2)) / 0.9).clamp(0.3, 1.0)
+          : 1.0;
       paintAnt(
         canvas,
         pos,
         ant.heading,
-        len,
+        len * shrink,
         Color(game.puzzle.palette[ant.color]),
         stride: ant.stride,
         carrying: ant.carrying,
