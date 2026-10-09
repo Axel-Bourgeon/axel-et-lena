@@ -5,6 +5,7 @@ import '../core/settings.dart';
 import '../games/fourmis/fourmis_page.dart';
 import '../games/pipopipette/pipopipette_page.dart';
 import '../games/puissance4/puissance4_page.dart';
+import '../games/taquin/taquin_page.dart';
 
 enum TileCategory {
   soloGames('Jeux solo'),
@@ -47,6 +48,18 @@ List<SubApp> buildRegistry() {
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const FourmisPage()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'taquin',
+      title: 'Taquin',
+      subtitle: 'Une photo à remettre en ordre',
+      icon: Icons.apps_outlined,
+      category: TileCategory.soloGames,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const TaquinPage()),
         );
       },
     ),
