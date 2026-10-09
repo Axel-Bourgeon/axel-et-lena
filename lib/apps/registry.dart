@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/launcher.dart';
 import '../core/settings.dart';
+import '../games/airhockey/airhockey_page.dart';
 import '../games/fourmis/fourmis_page.dart';
 import '../games/pipopipette/pipopipette_page.dart';
 import '../games/puissance4/puissance4_page.dart';
@@ -84,6 +85,18 @@ List<SubApp> buildRegistry() {
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const PipopipettePage()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'airhockey',
+      title: 'Air hockey',
+      subtitle: 'Chacun son côté de l\'écran',
+      icon: Icons.sports_hockey_outlined,
+      category: TileCategory.duoGames,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const AirHockeyPage()),
         );
       },
     ),
