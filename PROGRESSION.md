@@ -42,10 +42,20 @@ Dernière mise à jour : 2026-10-08
 - [x] Dépôt public, code déposé, secret `SIGNING_KEYSTORE_B64` en place
 - [x] Passage sur Claude Code (push direct), workflow CI recréé
 - [x] Premier build CI vert (build-1, 2026-10-08 : 8 tests OK, APK signé avec la clé stable)
+- [x] Fourmis : palette écartée, sachets visibles, fourmilière commune (retours d'Axel du 2026-10-08/09)
+- [x] Accueil : « Ensemble depuis X jours » (depuis le 1er juin 2017) — `lib/core/together.dart`
+- [x] Tuile Agenda : Google Agenda ou Outlook (choix dans Réglages)
+- [x] Puissance 4 (à deux ou contre le téléphone, minimax 3 niveaux)
+- [x] Pipopipette (à deux ou contre le téléphone, 3 tailles)
+- [x] Taquin photo (3×3 à 5×5)
+- [x] Air hockey (écran partagé multi-touch, ou contre le téléphone)
+- [x] Picross photo : grille 10/15/20, 1–4 couleurs + fond ; chaque ligne/colonne terminée révèle la vraie photo en HD ; validation par indices (toute solution valide acceptée)
+- [ ] Mot du jour (Wordle FR) : même mot pour les deux le même jour via la date (pas de lien entre téléphones). Il faut une liste de mots français (mots à deviner + mots acceptés).
 - [ ] Retours d'Axel et Léna après test sur téléphone
 
 ## Idées / prochaines étapes
 
-- Fourmis : sauvegarde de la partie en cours, sons/vibrations légers, niveaux de difficulté, galerie des images terminées.
-- Jeux à deux (même téléphone) : à définir avec Axel et Léna.
+- Fourmis : sauvegarde de la partie en cours, sons/vibrations légers, niveaux de difficulté, galerie des images terminées, mode duo (deux fourmilières).
+- Idées écartées par Axel : roue de décision (téléphones non reliés), liste de courses (déjà sur Discord).
+- Autres idées proposées : duel de réflexes, « Qui de nous deux ? », feuille de scores de jeux de société, morpion ultime.
 - Icône d'appli personnalisée.
