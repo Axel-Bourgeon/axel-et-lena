@@ -4,6 +4,7 @@ import '../core/launcher.dart';
 import '../core/settings.dart';
 import '../games/airhockey/airhockey_page.dart';
 import '../games/fourmis/fourmis_page.dart';
+import '../games/motdujour/motdujour_page.dart';
 import '../games/picross/picross_page.dart';
 import '../games/pipopipette/pipopipette_page.dart';
 import '../games/puissance4/puissance4_page.dart';
@@ -50,6 +51,18 @@ List<SubApp> buildRegistry() {
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const FourmisPage()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'motdujour',
+      title: 'Mot du jour',
+      subtitle: 'Le même mot pour nous deux',
+      icon: Icons.abc_outlined,
+      category: TileCategory.soloGames,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const MotDuJourPage()),
         );
       },
     ),
