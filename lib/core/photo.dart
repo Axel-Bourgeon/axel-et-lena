@@ -4,8 +4,136 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:photo_manager/photo_manager.dart';
 
-/// Outils d'image partagés par les jeux photo (Taquin, Picross).
+/// Outils d'image partagés par les jeux photo (Fourmis, Taquin, Picross,
+/// Pipopipette).
+
+/// L'accès à la galerie a été refusé.
+class GalleryAccessDenied implements Exception {
+  @override
+  String toString() => "Accès aux photos refusé (Réglages Android → Applis → Axel & Léna → Autorisations)";
+}
+
+/// Photo tirée au hasard dans la galerie (album de l'appareil photo de
+/// préférence, pour éviter les captures d'écran). null si aucune photo.
+Future<ui.Image?> randomGalleryImage({int maxSide = 1400, math.Random? rnd}) async {
+  final ps = await PhotoManager.requestPermissionExtend();
+  if (!ps.hasAccess) throw GalleryAccessDenied();
+  final paths = await PhotoManager.getAssetPathList(type: RequestType.image);
+  if (paths.isEmpty) return null;
+  bool isCamera(AssetPathEntity p) {
+    final n = p.name.toLowerCase();
+    return n.contains('camera') || n.contains('appareil') || n.contains('dcim');
+  }
+
+  final candidates = [
+    ...paths.where(isCamera),
+    ...paths.where((p) => p.isAll),
+    ...paths,
+  ];
+  final r = rnd ?? math.Random();
+  for (final path in candidates) {
+    final count = await path.assetCountAsync;
+    if (count == 0) continue;
+    final i = r.nextInt(count);
+    final assets = await path.getAssetListRange(start: i, end: i + 1);
+    if (assets.isEmpty) continue;
+    final bytes = await assets.first.thumbnailDataWithSize(ThumbnailSize(maxSide, maxSide), quality: 92);
+    if (bytes == null) continue;
+    final codec = await ui.instantiateImageCodec(bytes);
+    return (await codec.getNextFrame()).image;
+  }
+  return null;
+}
+
+enum PhotoSource { gallery, camera, random }
+
+/// Photo carrée depuis la galerie, l'appareil ou au hasard. null si annulé.
+Future<ui.Image?> squarePhotoFrom(PhotoSource source) async {
+  switch (source) {
+    case PhotoSource.gallery:
+      return pickSquarePhoto(ImageSource.gallery);
+    case PhotoSource.camera:
+      return pickSquarePhoto(ImageSource.camera);
+    case PhotoSource.random:
+      final img = await randomSquarePhoto();
+      if (img == null) throw Exception('aucune photo dans la galerie');
+      return img;
+  }
+}
+
+/// Message d'erreur lisible pour un chargement de photo raté.
+String photoErrorMessage(Object e) =>
+    e is GalleryAccessDenied ? '$e' : "Impossible de charger l'image ($e)";
+
+/// Boutons Galerie / Photo / Au hasard / Surprise des écrans de préparation.
+class PhotoSourceButtons extends StatelessWidget {
+  const PhotoSourceButtons({super.key, required this.enabled, required this.onSource, required this.onSurprise});
+
+  final bool enabled;
+  final void Function(PhotoSource source) onSource;
+  final VoidCallback onSurprise;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget b(IconData icon, String label, VoidCallback onTap) =>
+        FilledButton.tonalIcon(onPressed: enabled ? onTap : null, icon: Icon(icon), label: Text(label));
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        b(Icons.photo_library_outlined, 'Galerie', () => onSource(PhotoSource.gallery)),
+        b(Icons.photo_camera_outlined, 'Photo', () => onSource(PhotoSource.camera)),
+        b(Icons.casino_outlined, 'Au hasard', () => onSource(PhotoSource.random)),
+        b(Icons.auto_awesome_outlined, 'Surprise', onSurprise),
+      ],
+    );
+  }
+}
+
+/// Aperçu carré de la photo, ou carte « Photo mystère » si elle a été tirée
+/// au hasard (pour garder la surprise).
+class PhotoPreview extends StatelessWidget {
+  const PhotoPreview({super.key, required this.image, required this.mystery, required this.loading});
+
+  final ui.Image? image;
+  final bool mystery;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final img = image;
+    Widget child;
+    if (loading || img == null) {
+      child = const Center(child: CircularProgressIndicator());
+    } else if (mystery) {
+      child = ColoredBox(
+        color: scheme.primaryContainer,
+        child: Center(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Icon(Icons.help_outline, size: 64, color: scheme.onPrimaryContainer),
+            const SizedBox(height: 8),
+            Text('Photo mystère', style: TextStyle(color: scheme.onPrimaryContainer, fontWeight: FontWeight.w600)),
+          ]),
+        ),
+      );
+    } else {
+      child = RawImage(image: img, fit: BoxFit.cover);
+    }
+    return AspectRatio(aspectRatio: 1, child: Card(clipBehavior: Clip.antiAlias, child: child));
+  }
+}
+
+/// Comme [randomGalleryImage], recadrée au carré.
+Future<ui.Image?> randomSquarePhoto({int maxSide = 1080}) async {
+  final img = await randomGalleryImage();
+  if (img == null) return null;
+  final out = await cropSquare(img, maxSide: maxSide);
+  img.dispose();
+  return out;
+}
 
 /// Recadre au carré (centre) et limite la taille.
 Future<ui.Image> cropSquare(ui.Image src, {int maxSide = 1080}) async {

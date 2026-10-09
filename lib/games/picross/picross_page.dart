@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../core/photo.dart';
 import 'engine.dart';
@@ -24,6 +23,7 @@ class _PicrossPageState extends State<PicrossPage> {
   ui.Image? _image;
   Picross? _preview;
   bool _loading = false;
+  bool _mystery = false;
   int _seed = 1;
 
   @override
@@ -57,17 +57,21 @@ class _PicrossPageState extends State<PicrossPage> {
 
   Future<void> _surprise() async {
     _seed++;
+    _mystery = false;
     await _setImage(await paintSurpriseImage(_seed));
   }
 
-  Future<void> _pick(ImageSource source) async {
+  Future<void> _pick(PhotoSource source) async {
     setState(() => _loading = true);
     try {
-      final img = await pickSquarePhoto(source);
-      if (img != null) await _setImage(img);
+      final img = await squarePhotoFrom(source);
+      if (img != null) {
+        _mystery = source == PhotoSource.random;
+        await _setImage(img);
+      }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible de charger l\'image ($e)')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(photoErrorMessage(e))));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -100,58 +104,9 @@ class _PicrossPageState extends State<PicrossPage> {
             style: text.bodyMedium,
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Card(
-                    clipBehavior: Clip.antiAlias,
-                    child: _loading || img == null
-                        ? const Center(child: CircularProgressIndicator())
-                        : RawImage(image: img, fit: BoxFit.cover),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Card(
-                    clipBehavior: Clip.antiAlias,
-                    child: p == null || _loading
-                        ? const SizedBox()
-                        : CustomPaint(painter: _SolutionPreview(p, Theme.of(context).colorScheme.surface)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text('À gauche la photo, à droite la grille à retrouver.',
-              style: text.bodySmall, textAlign: TextAlign.center),
+          PhotoPreview(image: img, mystery: _mystery, loading: _loading),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              FilledButton.tonalIcon(
-                onPressed: _loading ? null : () => _pick(ImageSource.gallery),
-                icon: const Icon(Icons.photo_library_outlined),
-                label: const Text('Galerie'),
-              ),
-              FilledButton.tonalIcon(
-                onPressed: _loading ? null : () => _pick(ImageSource.camera),
-                icon: const Icon(Icons.photo_camera_outlined),
-                label: const Text('Photo'),
-              ),
-              FilledButton.tonalIcon(
-                onPressed: _loading ? null : _surprise,
-                icon: const Icon(Icons.auto_awesome_outlined),
-                label: const Text('Surprise'),
-              ),
-            ],
-          ),
+          PhotoSourceButtons(enabled: !_loading, onSource: _pick, onSurprise: _surprise),
           const SizedBox(height: 20),
           Text('Taille', style: text.titleSmall),
           const SizedBox(height: 6),
@@ -186,29 +141,6 @@ class _PicrossPageState extends State<PicrossPage> {
       ),
     );
   }
-}
-
-class _SolutionPreview extends CustomPainter {
-  _SolutionPreview(this.p, this.bg);
-  final Picross p;
-  final Color bg;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cell = size.width / p.n;
-    canvas.drawRect(Offset.zero & size, Paint()..color = bg);
-    for (int i = 0; i < p.solution.length; i++) {
-      final v = p.solution[i];
-      if (v == 0) continue;
-      canvas.drawRect(
-        Rect.fromLTWH((i % p.n) * cell, (i ~/ p.n) * cell, cell + 0.5, cell + 0.5),
-        Paint()..color = Color(p.palette[v - 1]),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _SolutionPreview old) => old.p != p;
 }
 
 // -----------------------------------------------------------------------------

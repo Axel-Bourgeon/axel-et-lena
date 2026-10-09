@@ -51,6 +51,9 @@ Dernière mise à jour : 2026-10-08
 - [x] Air hockey (écran partagé multi-touch, ou contre le téléphone)
 - [x] Picross photo : grille 10/15/20, 1–4 couleurs + fond ; chaque ligne/colonne terminée révèle la vraie photo en HD ; validation par indices (toute solution valide acceptée)
 - [x] Mot du jour (Wordle FR, build-14) : mot choisi par le numéro du jour depuis le 2026-10-09 dans une liste mélangée de façon fixe → même mot pour les deux s'ils ont la même version. Listes tirées de Lexique 3.83 (CC BY-SA), `assets/words/` ; ne pas modifier `answers.txt` à la légère. Accents ignorés, clavier AZERTY, stats, résultat à copier pour Discord.
+- [x] Fourmis : plus de grisé sur les pixels inaccessibles (2026-10-09, demande d'Axel)
+- [x] « Au hasard » : photo tirée dans la galerie (album appareil photo de préférence) via photo_manager, pour Fourmis, Taquin, Picross ; aperçu masqué (« Photo mystère ») pour Taquin et Picross. L'écran Picross n'affiche plus la grille solution.
+- [x] Pipopipette : photo cachée (au hasard dans la galerie, paysage dessiné en repli), chaque carré fermé révèle son morceau teinté de la couleur du joueur
 - [ ] Retours d'Axel et Léna après test sur téléphone
 
 ## Idées / prochaines étapes

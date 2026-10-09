@@ -87,7 +87,6 @@ class GamePainter extends CustomPainter {
     );
     final inset = cell >= 7 ? cell * 0.06 : 0.0;
     final paint = Paint();
-    final dim = Paint()..color = scheme.surface.withValues(alpha: 0.38);
     for (int y = 0; y < p.height; y++) {
       for (int x = 0; x < p.width; x++) {
         final i = y * p.width + x;
@@ -101,7 +100,6 @@ class GamePainter extends CustomPainter {
         );
         paint.color = Color(p.palette[c]);
         canvas.drawRect(r, paint);
-        if (!game.accessible[i]) canvas.drawRect(r, dim);
       }
     }
   }

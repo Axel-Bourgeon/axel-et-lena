@@ -1,7 +1,9 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import '../../core/photo.dart';
 import 'engine.dart';
 
 enum _Mode { duo, phone }
@@ -27,10 +29,66 @@ class _PipopipettePageState extends State<PipopipettePage> {
   final _rnd = math.Random();
   final List<int> _wins = [0, 0, 0];
 
+  /// Photo cachée sous la grille, révélée carré par carré.
+  bool _photoMode = true;
+  ui.Image? _photo;
+  bool _photoLoading = false;
+  bool _photoErrorShown = false;
+  int _surpriseSeed = 0;
+
   @override
   void initState() {
     super.initState();
     _game = _fresh();
+    _loadPhoto();
+  }
+
+  @override
+  void dispose() {
+    _photo?.dispose();
+    super.dispose();
+  }
+
+  /// Tire une photo au hasard dans la galerie (paysage dessiné en repli).
+  Future<void> _loadPhoto() async {
+    if (!_photoMode) return;
+    setState(() => _photoLoading = true);
+    ui.Image? img;
+    try {
+      img = await randomSquarePhoto(maxSide: 900);
+    } catch (e) {
+      // Prévenir une seule fois, puis utiliser le paysage dessiné.
+      if (mounted && !_photoErrorShown) {
+        _photoErrorShown = true;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(photoErrorMessage(e))));
+      }
+    }
+    img ??= await paintSurpriseImage(++_surpriseSeed);
+    if (!mounted) {
+      img.dispose();
+      return;
+    }
+    final old = _photo;
+    setState(() {
+      _photo = img;
+      _photoLoading = false;
+    });
+    old?.dispose();
+  }
+
+  void _showPhoto() {
+    final img = _photo;
+    if (img == null) return;
+    showDialog<void>(
+      context: context,
+      builder: (context) => Dialog(
+        clipBehavior: Clip.antiAlias,
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: AspectRatio(aspectRatio: 1, child: RawImage(image: img, fit: BoxFit.cover)),
+        ),
+      ),
+    );
   }
 
   DotsAndBoxes _fresh() {
@@ -51,6 +109,7 @@ class _PipopipettePageState extends State<PipopipettePage> {
       _game = _fresh();
       _last = null;
     });
+    _loadPhoto();
     _phoneLoop();
   }
 
@@ -151,7 +210,17 @@ class _PipopipettePageState extends State<PipopipettePage> {
                 _newGame(alternate: false);
               },
             ),
-            const SizedBox(height: 16),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Photo cachée'),
+              subtitle: const Text('Une photo de la galerie au hasard, révélée carré par carré'),
+              value: _photoMode,
+              onChanged: (v) {
+                setState(() => _photoMode = v);
+                if (v && _photo == null) _loadPhoto();
+              },
+            ),
+            const SizedBox(height: 8),
             Row(
               children: [
                 _ScoreChip(
@@ -189,6 +258,7 @@ class _PipopipettePageState extends State<PipopipettePage> {
                       cell: cell,
                       origin: origin,
                       last: _last,
+                      photo: _photoMode && !_photoLoading ? _photo : null,
                       dotColor: scheme.onSurface,
                       emptyColor: scheme.outlineVariant.withValues(alpha: 0.5),
                     ),
@@ -198,6 +268,15 @@ class _PipopipettePageState extends State<PipopipettePage> {
             ),
             if (_game.over) ...[
               const SizedBox(height: 16),
+              if (_photoMode && _photo != null) ...[
+                OutlinedButton.icon(
+                  onPressed: _showPhoto,
+                  icon: const Icon(Icons.image_outlined),
+                  label: const Text('Voir la photo'),
+                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
+                ),
+                const SizedBox(height: 8),
+              ],
               FilledButton.icon(
                 onPressed: _newGame,
                 icon: const Icon(Icons.replay),
@@ -256,6 +335,7 @@ class _BoardPainter extends CustomPainter {
     required this.cell,
     required this.origin,
     required this.last,
+    required this.photo,
     required this.dotColor,
     required this.emptyColor,
   });
@@ -264,6 +344,7 @@ class _BoardPainter extends CustomPainter {
   final double cell;
   final Offset origin;
   final (bool, int)? last;
+  final ui.Image? photo;
   final Color dotColor, emptyColor;
 
   Offset _pt(int r, int c) => origin + Offset(c * cell, r * cell);
@@ -277,6 +358,20 @@ class _BoardPainter extends CustomPainter {
       final p = game.boxes[b];
       if (p == 0) continue;
       final r = b ~/ game.cols, c = b % game.cols;
+      final img = photo;
+      if (img != null) {
+        // Morceau de la photo, teinté de la couleur du joueur.
+        final rect = Rect.fromPoints(_pt(r, c), _pt(r + 1, c + 1));
+        final s = img.width / game.cols;
+        canvas.drawImageRect(
+          img,
+          Rect.fromLTWH(c * s, r * s, s, s),
+          rect,
+          Paint()..filterQuality = FilterQuality.medium,
+        );
+        canvas.drawRect(rect, Paint()..color = _color(p).withValues(alpha: 0.28));
+        continue;
+      }
       final rect = Rect.fromPoints(_pt(r, c), _pt(r + 1, c + 1)).deflate(cell * 0.08);
       canvas.drawRRect(
         RRect.fromRectAndRadius(rect, Radius.circular(cell * 0.12)),

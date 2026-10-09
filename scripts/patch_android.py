@@ -1,6 +1,7 @@
 """Adapte le projet Android généré par `flutter create` (exécuté en CI).
 
 - nom affiché de l'appli
+- autorisation de lire les photos (photo au hasard)
 - visibilité des applis externes (<queries>) : HabitKit, Discord, agendas
 - MainActivity avec le canal de lancement d'applis
 """
@@ -27,9 +28,19 @@ QUERIES = """
         </intent>"""
 
 
+PERMISSIONS = """
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+"""
+
+
 def patch_manifest() -> None:
     text = MANIFEST.read_text(encoding="utf-8")
     text = re.sub(r'android:label="[^"]*"', 'android:label="Axel &amp; Léna"', text, count=1)
+    # Photo au hasard dans la galerie (photo_manager).
+    if "READ_MEDIA_IMAGES" not in text:
+        text = re.sub(r"(<manifest[^>]*>)", r"\1" + PERMISSIONS.replace("\\", "\\\\"), text, count=1)
     if "com.roehl.habitkit" not in text:
         if "<queries>" in text:
             text = text.replace("<queries>", "<queries>" + QUERIES, 1)

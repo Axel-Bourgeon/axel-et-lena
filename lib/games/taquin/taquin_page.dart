@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../core/photo.dart';
 import 'engine.dart';
@@ -22,6 +21,7 @@ class _TaquinPageState extends State<TaquinPage> {
   String _size = '3 × 3';
   ui.Image? _image;
   bool _loading = false;
+  bool _mystery = false;
   int _surpriseSeed = 1;
 
   @override
@@ -44,17 +44,21 @@ class _TaquinPageState extends State<TaquinPage> {
 
   Future<void> _surprise() async {
     _surpriseSeed++;
+    _mystery = false;
     _setImage(await paintSurpriseImage(_surpriseSeed));
   }
 
-  Future<void> _pick(ImageSource source) async {
+  Future<void> _pick(PhotoSource source) async {
     setState(() => _loading = true);
     try {
-      final img = await pickSquarePhoto(source);
-      if (img != null) _setImage(img);
+      final img = await squarePhotoFrom(source);
+      if (img != null) {
+        _mystery = source == PhotoSource.random;
+        _setImage(img);
+      }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible de charger l\'image ($e)')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(photoErrorMessage(e))));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -81,37 +85,9 @@ class _TaquinPageState extends State<TaquinPage> {
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 16),
-          AspectRatio(
-            aspectRatio: 1,
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              child: _loading || img == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : RawImage(image: img, fit: BoxFit.cover),
-            ),
-          ),
+          PhotoPreview(image: img, mystery: _mystery, loading: _loading),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              FilledButton.tonalIcon(
-                onPressed: _loading ? null : () => _pick(ImageSource.gallery),
-                icon: const Icon(Icons.photo_library_outlined),
-                label: const Text('Galerie'),
-              ),
-              FilledButton.tonalIcon(
-                onPressed: _loading ? null : () => _pick(ImageSource.camera),
-                icon: const Icon(Icons.photo_camera_outlined),
-                label: const Text('Photo'),
-              ),
-              FilledButton.tonalIcon(
-                onPressed: _loading ? null : _surprise,
-                icon: const Icon(Icons.auto_awesome_outlined),
-                label: const Text('Surprise'),
-              ),
-            ],
-          ),
+          PhotoSourceButtons(enabled: !_loading, onSource: _pick, onSurprise: _surprise),
           const SizedBox(height: 20),
           Text('Taille', style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 6),

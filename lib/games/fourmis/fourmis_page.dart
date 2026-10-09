@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/photo.dart';
 import 'game_page.dart';
 import 'painter.dart';
 import 'palette.dart';
@@ -76,30 +77,35 @@ class _FourmisPageState extends State<FourmisPage> {
     return PixelPuzzle(width: p.width, height: p.height, cells: q.labels, palette: q.palette);
   }
 
-  Future<void> _pick(ImageSource source) async {
+  /// [source] null : photo tirée au hasard dans la galerie.
+  Future<void> _pick(ImageSource? source) async {
     setState(() => _loading = true);
     try {
-      final file = await ImagePicker().pickImage(
-        source: source,
-        maxWidth: 480,
-        maxHeight: 480,
-        imageQuality: 92,
-      );
-      if (file == null) return;
-      final bytes = await file.readAsBytes();
-      final codec = await ui.instantiateImageCodec(bytes);
-      final frame = await codec.getNextFrame();
-      final image = frame.image;
-      final data = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-      if (data == null) throw Exception('décodage impossible');
-      _rgba = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      ui.Image? image;
+      if (source == null) {
+        image = await randomGalleryImage(maxSide: 480);
+        if (image == null) throw Exception('aucune photo dans la galerie');
+      } else {
+        final file = await ImagePicker().pickImage(
+          source: source,
+          maxWidth: 480,
+          maxHeight: 480,
+          imageQuality: 92,
+        );
+        if (file == null) return;
+        final codec = await ui.instantiateImageCodec(await file.readAsBytes());
+        image = (await codec.getNextFrame()).image;
+      }
+      _rgba = await rgbaOf(image);
       _srcW = image.width;
       _srcH = image.height;
       image.dispose();
       _rebuild();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible de charger l\'image ($e)')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e is GalleryAccessDenied ? '$e' : 'Impossible de charger l\'image ($e)'),
+      ));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -160,6 +166,11 @@ class _FourmisPageState extends State<FourmisPage> {
                 onPressed: _loading ? null : () => _pick(ImageSource.camera),
                 icon: const Icon(Icons.photo_camera_outlined),
                 label: const Text('Photo'),
+              ),
+              FilledButton.tonalIcon(
+                onPressed: _loading ? null : () => _pick(null),
+                icon: const Icon(Icons.casino_outlined),
+                label: const Text('Au hasard'),
               ),
               FilledButton.tonalIcon(
                 onPressed: _loading ? null : _surprise,
