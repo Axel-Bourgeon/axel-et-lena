@@ -54,6 +54,8 @@ Dernière mise à jour : 2026-10-08
 - [x] Fourmis : plus de grisé sur les pixels inaccessibles (2026-10-09, demande d'Axel)
 - [x] « Au hasard » : photo tirée dans la galerie (album appareil photo de préférence) via photo_manager, pour Fourmis, Taquin, Picross ; aperçu masqué (« Photo mystère ») pour Taquin et Picross. L'écran Picross n'affiche plus la grille solution.
 - [x] Pipopipette : photo cachée (au hasard dans la galerie, paysage dessiné en repli), chaque carré fermé révèle son morceau teinté de la couleur du joueur
+- [x] Picross (build-16) : colorier recouvre tout, repasser la même couleur efface, outil gomme ; cases révélées teintées de la couleur posée (vides éclaircies), photo sans teinte à la victoire
+- [x] Fourmis (build-16) : la fenêtre de réussite montre la photo d'origine (non pixellisée)
 - [ ] Retours d'Axel et Léna après test sur téléphone
 
 ## Idées / prochaines étapes
