@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/launcher.dart';
 import '../core/settings.dart';
 import '../games/fourmis/fourmis_page.dart';
+import '../games/pipopipette/pipopipette_page.dart';
 import '../games/puissance4/puissance4_page.dart';
 
 enum TileCategory {
@@ -58,6 +59,18 @@ List<SubApp> buildRegistry() {
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const Puissance4Page()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'pipopipette',
+      title: 'Pipopipette',
+      subtitle: 'Fermer le plus de carrés',
+      icon: Icons.border_all_outlined,
+      category: TileCategory.duoGames,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const PipopipettePage()),
         );
       },
     ),
