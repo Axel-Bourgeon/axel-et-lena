@@ -50,7 +50,7 @@ Dernière mise à jour : 2026-10-08
 - [x] Taquin photo (3×3 à 5×5)
 - [x] Air hockey (écran partagé multi-touch, ou contre le téléphone)
 - [x] Picross photo : grille 10/15/20, 1–4 couleurs + fond ; chaque ligne/colonne terminée révèle la vraie photo en HD ; validation par indices (toute solution valide acceptée)
-- [ ] Mot du jour (Wordle FR) : même mot pour les deux le même jour via la date (pas de lien entre téléphones). Il faut une liste de mots français (mots à deviner + mots acceptés).
+- [x] Mot du jour (Wordle FR, build-14) : mot choisi par le numéro du jour depuis le 2026-10-09 dans une liste mélangée de façon fixe → même mot pour les deux s'ils ont la même version. Listes tirées de Lexique 3.83 (CC BY-SA), `assets/words/` ; ne pas modifier `answers.txt` à la légère. Accents ignorés, clavier AZERTY, stats, résultat à copier pour Discord.
 - [ ] Retours d'Axel et Léna après test sur téléphone
 
 ## Idées / prochaines étapes
