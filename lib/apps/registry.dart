@@ -59,6 +59,16 @@ List<SubApp> buildRegistry() {
       },
     ),
     SubApp(
+      id: 'agenda',
+      title: 'Agenda',
+      subtitle: 'Google Agenda ou Outlook (Réglages)',
+      icon: Icons.calendar_month_outlined,
+      category: TileCategory.tools,
+      open: (BuildContext context, AppSettings settings) {
+        return Launcher.openCalendar(context, settings.calendarApp);
+      },
+    ),
+    SubApp(
       id: 'discord',
       title: 'Discord',
       subtitle: 'Serveur Léna et Axel',

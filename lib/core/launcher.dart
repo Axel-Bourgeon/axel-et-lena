@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Ouverture d'applis externes (HabitKit, Discord) via le canal natif
+import 'settings.dart';
+
+/// Ouverture d'applis externes (HabitKit, Discord, agenda) via le canal natif
 /// défini dans MainActivity.kt, avec repli sur url_launcher.
 class Launcher {
   Launcher._();
@@ -46,28 +48,49 @@ class Launcher {
       ..showSnackBar(SnackBar(content: Text(message)));
   }
 
-  /// Ouvre HabitKit, ou sa fiche Play Store s'il n'est pas installé.
-  static Future<void> openHabitKit(BuildContext context) async {
+  /// Ouvre l'appli [package] (éventuellement sur [deepLink]), ou sa fiche
+  /// Play Store si elle n'est pas installée.
+  static Future<void> _openAppOrStore(
+    BuildContext context,
+    String package,
+    String name, {
+    String? deepLink,
+  }) async {
     try {
-      final bool opened = await _openApp(habitKitPackage);
-      if (opened) return;
+      if (deepLink != null && await _openUrlInPackage(deepLink, package)) {
+        return;
+      }
+      if (await _openApp(package)) return;
 
-      bool ok = await _launchExternal(
-        'market://details?id=$habitKitPackage',
-      );
+      bool ok = await _launchExternal('market://details?id=$package');
       if (!ok) {
         ok = await _launchExternal(
-          'https://play.google.com/store/apps/details?id=$habitKitPackage',
+          'https://play.google.com/store/apps/details?id=$package',
         );
       }
-      if (!ok) {
-        if (context.mounted) _snack(context, "Impossible d'ouvrir HabitKit ni le Play Store.");
+      if (!ok && context.mounted) {
+        _snack(context, "Impossible d'ouvrir $name ni le Play Store.");
       }
     } on PlatformException {
-      if (context.mounted) _snack(context, "Impossible d'ouvrir HabitKit.");
+      if (context.mounted) _snack(context, "Impossible d'ouvrir $name.");
     } on MissingPluginException {
-      if (context.mounted) _snack(context, "Impossible d'ouvrir HabitKit.");
+      if (context.mounted) _snack(context, "Impossible d'ouvrir $name.");
     }
+  }
+
+  /// Ouvre HabitKit, ou sa fiche Play Store s'il n'est pas installé.
+  static Future<void> openHabitKit(BuildContext context) {
+    return _openAppOrStore(context, habitKitPackage, 'HabitKit');
+  }
+
+  /// Ouvre l'agenda choisi dans les Réglages (Google Agenda ou Outlook).
+  static Future<void> openCalendar(BuildContext context, CalendarApp app) {
+    return _openAppOrStore(
+      context,
+      app.package,
+      app.label,
+      deepLink: app.deepLink,
+    );
   }
 
   /// Ouvre le serveur Discord (appli Discord si possible, sinon navigateur).
@@ -89,8 +112,8 @@ class Launcher {
       if (opened) return;
 
       final bool ok = await _launchExternal(url);
-      if (!ok) {
-        if (context.mounted) _snack(context, "Impossible d'ouvrir Discord.");
+      if (!ok && context.mounted) {
+        _snack(context, "Impossible d'ouvrir Discord.");
       }
     } on PlatformException {
       if (context.mounted) _snack(context, "Impossible d'ouvrir Discord.");

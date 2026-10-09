@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../apps/registry.dart';
 import '../core/settings.dart';
+import '../core/together.dart';
 import 'settings_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -83,12 +84,7 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            Text(
-                              'Notre petit coin à nous',
-                              style: textTheme.bodyLarge?.copyWith(
-                                color: scheme.onSurfaceVariant,
-                              ),
-                            ),
+                            const _TogetherCounter(),
                           ],
                         ),
                       ),
@@ -178,6 +174,54 @@ class HomePage extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+/// « Ensemble depuis X jours », avec le détail en années / mois / jours.
+class _TogetherCounter extends StatelessWidget {
+  const _TogetherCounter();
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme scheme = theme.colorScheme;
+    final DateTime now = DateTime.now();
+    final TogetherSpan span = togetherSpan(
+      kTogetherSince,
+      DateTime.utc(now.year, now.month, now.day),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text.rich(
+          TextSpan(
+            children: <InlineSpan>[
+              const TextSpan(text: 'Ensemble depuis '),
+              TextSpan(
+                text: formatThousands(span.days),
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              TextSpan(text: span.days > 1 ? ' jours ' : ' jour '),
+              TextSpan(
+                text: '♥',
+                style: TextStyle(color: scheme.primary),
+              ),
+            ],
+          ),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+        Text(
+          span.isAnniversary
+              ? 'Joyeux anniversaire : ${span.years} ans aujourd\'hui !'
+              : span.detail,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -5,6 +5,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// À renseigner ici pour avoir une valeur par défaut (modifiable aussi dans Réglages).
 const String kDefaultDiscordServerId = '1378749282177515722';
 
+/// Date de début de notre histoire (compteur de l'accueil).
+final DateTime kTogetherSince = DateTime.utc(2017, 6, 1);
+
+/// Appli d'agenda ouverte par la tuile « Agenda ».
+enum CalendarApp {
+  google('Google Agenda', 'com.google.android.calendar', null),
+  outlook('Outlook', 'com.microsoft.office.outlook', 'ms-outlook://events');
+
+  const CalendarApp(this.label, this.package, this.deepLink);
+
+  final String label;
+  final String package;
+
+  /// Lien ouvrant directement la vue agenda (Outlook s'ouvre sinon sur les mails).
+  final String? deepLink;
+}
+
 /// Couleur de base par défaut (vert sauge doux).
 const int kDefaultSeedColor = 0xFF6B8E7F;
 
@@ -24,6 +41,7 @@ const String _kSeedColorKey = 'settings.seedColor';
 const String _kThemeModeKey = 'settings.themeMode';
 const String _kDiscordKey = 'settings.discordServerId';
 const String _kHiddenTilesKey = 'settings.hiddenTiles';
+const String _kCalendarKey = 'settings.calendarApp';
 
 class AppSettings extends ChangeNotifier {
   AppSettings._(
@@ -32,10 +50,12 @@ class AppSettings extends ChangeNotifier {
     required ThemeMode themeMode,
     required String discordServerId,
     required List<String> hiddenTiles,
+    required CalendarApp calendarApp,
   })  : _seedColor = seedColor,
         _themeMode = themeMode,
         _discordServerId = discordServerId,
-        _hiddenTiles = hiddenTiles;
+        _hiddenTiles = hiddenTiles,
+        _calendarApp = calendarApp;
 
   final SharedPreferences _prefs;
 
@@ -43,6 +63,7 @@ class AppSettings extends ChangeNotifier {
   ThemeMode _themeMode;
   String _discordServerId;
   List<String> _hiddenTiles;
+  CalendarApp _calendarApp;
 
   /// Charge les réglages depuis le stockage local.
   static Future<AppSettings> load() async {
@@ -55,6 +76,10 @@ class AppSettings extends ChangeNotifier {
           prefs.getString(_kDiscordKey) ?? kDefaultDiscordServerId,
       hiddenTiles: List<String>.of(
         prefs.getStringList(_kHiddenTilesKey) ?? const <String>[],
+      ),
+      calendarApp: CalendarApp.values.firstWhere(
+        (CalendarApp c) => c.name == prefs.getString(_kCalendarKey),
+        orElse: () => CalendarApp.google,
       ),
     );
   }
@@ -86,7 +111,16 @@ class AppSettings extends ChangeNotifier {
   String get discordServerId => _discordServerId;
   List<String> get hiddenTiles => List<String>.unmodifiable(_hiddenTiles);
 
+  CalendarApp get calendarApp => _calendarApp;
+
   bool isHidden(String id) => _hiddenTiles.contains(id);
+
+  Future<void> setCalendarApp(CalendarApp value) async {
+    if (value == _calendarApp) return;
+    _calendarApp = value;
+    notifyListeners();
+    await _prefs.setString(_kCalendarKey, value.name);
+  }
 
   Future<void> setSeedColor(int value) async {
     if (value == _seedColor) return;

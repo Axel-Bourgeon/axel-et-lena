@@ -1,7 +1,7 @@
 """Adapte le projet Android généré par `flutter create` (exécuté en CI).
 
 - nom affiché de l'appli
-- visibilité des applis externes (<queries>) pour HabitKit et Discord
+- visibilité des applis externes (<queries>) : HabitKit, Discord, agendas
 - MainActivity avec le canal de lancement d'applis
 """
 import pathlib
@@ -15,6 +15,8 @@ MANIFEST = MAIN / "AndroidManifest.xml"
 QUERIES = """
         <package android:name="com.roehl.habitkit" />
         <package android:name="com.discord" />
+        <package android:name="com.google.android.calendar" />
+        <package android:name="com.microsoft.office.outlook" />
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />

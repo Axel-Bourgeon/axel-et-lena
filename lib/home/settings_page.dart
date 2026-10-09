@@ -122,6 +122,26 @@ class _SettingsPageState extends State<SettingsPage> {
                     settings.setDiscordServerId(value);
                   },
                 ),
+                _sectionTitle(context, 'Agenda'),
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<CalendarApp>(
+                    showSelectedIcon: false,
+                    segments: <ButtonSegment<CalendarApp>>[
+                      for (final CalendarApp c in CalendarApp.values)
+                        ButtonSegment<CalendarApp>(
+                          value: c,
+                          label: Text(c.label),
+                        ),
+                    ],
+                    selected: <CalendarApp>{settings.calendarApp},
+                    onSelectionChanged: (Set<CalendarApp> selection) {
+                      if (selection.isNotEmpty) {
+                        settings.setCalendarApp(selection.first);
+                      }
+                    },
+                  ),
+                ),
                 _sectionTitle(context, 'Tuiles masquées'),
                 if (hiddenApps.isEmpty)
                   Text(
