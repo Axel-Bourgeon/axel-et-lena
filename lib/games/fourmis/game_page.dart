@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -6,10 +8,13 @@ import 'painter.dart';
 import 'puzzle.dart';
 
 class FourmisGamePage extends StatefulWidget {
-  const FourmisGamePage({super.key, required this.puzzle, this.slotCount = 5});
+  const FourmisGamePage({super.key, required this.puzzle, this.slotCount = 5, this.photo});
 
   final PixelPuzzle puzzle;
   final int slotCount;
+
+  /// Photo d'origine (null pour l'image dessinée « Surprise »).
+  final ui.Image? photo;
 
   @override
   State<FourmisGamePage> createState() => _FourmisGamePageState();
@@ -47,6 +52,7 @@ class _FourmisGamePageState extends State<FourmisGamePage> with SingleTickerProv
   @override
   void dispose() {
     _ticker.dispose();
+    widget.photo?.dispose();
     super.dispose();
   }
 
@@ -123,11 +129,20 @@ class _FourmisGamePageState extends State<FourmisGamePage> with SingleTickerProv
         Text('Bravo !', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 12),
         SizedBox(
-          height: 220,
-          child: AspectRatio(
-            aspectRatio: widget.puzzle.width / widget.puzzle.height,
-            child: CustomPaint(painter: PuzzlePreviewPainter(widget.puzzle)),
-          ),
+          height: 260,
+          child: widget.photo != null
+              // La vraie photo, sans pixellisation ni changement de couleurs.
+              ? AspectRatio(
+                  aspectRatio: widget.photo!.width / widget.photo!.height,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: RawImage(image: widget.photo, fit: BoxFit.cover),
+                  ),
+                )
+              : AspectRatio(
+                  aspectRatio: widget.puzzle.width / widget.puzzle.height,
+                  child: CustomPaint(painter: PuzzlePreviewPainter(widget.puzzle)),
+                ),
         ),
         const SizedBox(height: 12),
         Text('${_game.moves} sachets ouverts · $time'),

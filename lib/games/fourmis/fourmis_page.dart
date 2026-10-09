@@ -34,6 +34,15 @@ class _FourmisPageState extends State<FourmisPage> {
   PixelPuzzle? _puzzle;
   bool _loading = false;
 
+  /// Photo d'origine, montrée telle quelle à la victoire.
+  ui.Image? _photo;
+
+  @override
+  void dispose() {
+    _photo?.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -83,13 +92,13 @@ class _FourmisPageState extends State<FourmisPage> {
     try {
       ui.Image? image;
       if (source == null) {
-        image = await randomGalleryImage(maxSide: 480);
+        image = await randomGalleryImage(maxSide: 1080);
         if (image == null) throw Exception('aucune photo dans la galerie');
       } else {
         final file = await ImagePicker().pickImage(
           source: source,
-          maxWidth: 480,
-          maxHeight: 480,
+          maxWidth: 1080,
+          maxHeight: 1080,
           imageQuality: 92,
         );
         if (file == null) return;
@@ -99,7 +108,8 @@ class _FourmisPageState extends State<FourmisPage> {
       _rgba = await rgbaOf(image);
       _srcW = image.width;
       _srcH = image.height;
-      image.dispose();
+      _photo?.dispose();
+      _photo = image;
       _rebuild();
     } catch (e) {
       if (!mounted) return;
@@ -113,6 +123,8 @@ class _FourmisPageState extends State<FourmisPage> {
 
   void _surprise() {
     _rgba = null;
+    _photo?.dispose();
+    _photo = null;
     _sampleSeed = math.Random().nextInt(1000);
     _rebuild();
   }
@@ -121,7 +133,7 @@ class _FourmisPageState extends State<FourmisPage> {
     final p = _puzzle;
     if (p == null) return;
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => FourmisGamePage(puzzle: p, slotCount: _slots)),
+      MaterialPageRoute(builder: (_) => FourmisGamePage(puzzle: p, slotCount: _slots, photo: _photo?.clone())),
     );
   }
 

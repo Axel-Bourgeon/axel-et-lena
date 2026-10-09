@@ -156,7 +156,7 @@ class PicrossGamePage extends StatefulWidget {
 }
 
 class _PicrossGamePageState extends State<PicrossGamePage> {
-  /// Outil : 1..k = couleur, -1 = croix.
+  /// Outil : 1..k = couleur, -1 = croix, 0 = gomme.
   int _tool = 1;
   final Stopwatch _clock = Stopwatch();
   Timer? _timer;
@@ -236,11 +236,9 @@ class _PicrossGamePageState extends State<PicrossGamePage> {
   }
 
   void _apply(int i, {bool refresh = true}) {
-    final cur = _before[i];
-    // En effaçant, on ne touche qu'aux cases de la valeur de l'outil.
-    if (_paintValue == 0 && cur != _tool) return;
-    // En coloriant, on ne recouvre pas une autre couleur déjà posée.
-    if (_paintValue != 0 && cur != 0 && cur != _tool) return;
+    // Repasser avec une couleur n'efface que cette couleur ; la gomme
+    // efface tout ; colorier recouvre tout (autre couleur ou croix).
+    if (_tool != 0 && _paintValue == 0 && _before[i] != _tool) return;
     _p.state[i] = _paintValue;
     if (refresh) setState(() {});
   }
@@ -346,6 +344,15 @@ class _PicrossGamePageState extends State<PicrossGamePage> {
                       onTap: () => setState(() => _tool = -1),
                       child: const SizedBox(width: 34, height: 34, child: Icon(Icons.close)),
                     ),
+                    _ToolButton(
+                      selected: _tool == 0,
+                      onTap: () => setState(() => _tool = 0),
+                      child: const SizedBox(
+                        width: 34,
+                        height: 34,
+                        child: Tooltip(message: 'Gomme', child: Icon(Icons.auto_fix_normal_outlined)),
+                      ),
+                    ),
                   ],
                 ),
               )
@@ -442,21 +449,23 @@ class _GridPainter extends CustomPainter {
     for (int i = 0; i < n * n; i++) {
       final r = i ~/ n, c = i % n;
       final rect = Rect.fromLTWH(o.dx + c * cell, o.dy + r * cell, cell, cell);
+      final v = p.state[i];
       if (rowDone[r] || colDone[c]) {
-        // Morceau de la vraie photo, en pleine qualité.
+        // Morceau de la vraie photo, teinté de la couleur posée (ou éclairci
+        // si la case est vide) pour que les indices restent lisibles.
         canvas.drawImageRect(image, Rect.fromLTWH(c * src, r * src, src, src), rect.inflate(0.3), paint);
+        if (v > 0) {
+          canvas.drawRect(rect, Paint()..color = Color(p.palette[v - 1]).withValues(alpha: 0.55));
+        } else {
+          canvas.drawRect(rect, Paint()..color = scheme.surface.withValues(alpha: 0.72));
+          if (v < 0) _cross(canvas, rect, cell);
+        }
         continue;
       }
-      final v = p.state[i];
       if (v > 0) {
         canvas.drawRect(rect.deflate(0.5), Paint()..color = Color(p.palette[v - 1]));
       } else if (v < 0) {
-        final x = Paint()
-          ..color = scheme.onSurfaceVariant
-          ..strokeWidth = math.max(1, cell * 0.08);
-        final d = rect.deflate(cell * 0.3);
-        canvas.drawLine(d.topLeft, d.bottomRight, x);
-        canvas.drawLine(d.topRight, d.bottomLeft, x);
+        _cross(canvas, rect, cell);
       }
     }
 
@@ -509,6 +518,15 @@ class _GridPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, box.center - Offset(tp.width / 2, tp.height / 2));
+  }
+
+  void _cross(Canvas canvas, Rect rect, double cell) {
+    final x = Paint()
+      ..color = scheme.onSurfaceVariant
+      ..strokeWidth = math.max(1, cell * 0.08);
+    final d = rect.deflate(cell * 0.3);
+    canvas.drawLine(d.topLeft, d.bottomRight, x);
+    canvas.drawLine(d.topRight, d.bottomLeft, x);
   }
 
   void _zero(Canvas canvas, Rect r) {
