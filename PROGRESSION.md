@@ -56,6 +56,10 @@ Dernière mise à jour : 2026-10-08
 - [x] Pipopipette : photo cachée (au hasard dans la galerie, paysage dessiné en repli), chaque carré fermé révèle son morceau teinté de la couleur du joueur
 - [x] Picross (build-16) : colorier recouvre tout, repasser la même couleur efface, outil gomme ; cases révélées teintées de la couleur posée (vides éclaircies), photo sans teinte à la victoire
 - [x] Fourmis (build-16) : la fenêtre de réussite montre la photo d'origine (non pixellisée)
+- [x] Outil Dés : pile ou face, D4–D100, formules (« 5D6 + 3 »), animation
+- [x] C'est un 10, mais… (nombre secret 0–9, devinette avec points d'équipe)
+- [x] Le Disque (façon Longueur d'onde) : banque `assets/disque/concepts.json` (230 couples + 16 thèmes, générée par un sous-agent Haiku, relue) ; 30 % des axes tirés dans un thème (deux éléments d'un même thème)
+- [x] Accueil : chaque catégorie en bande horizontale de deux rangées (on glisse au-delà de 4 tuiles)
 - [ ] Retours d'Axel et Léna après test sur téléphone
 
 ## Idées / prochaines étapes

@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import '../core/launcher.dart';
 import '../core/settings.dart';
 import '../games/airhockey/airhockey_page.dart';
+import '../games/cestun10/cestun10_page.dart';
+import '../games/disque/disque_page.dart';
 import '../games/fourmis/fourmis_page.dart';
 import '../games/motdujour/motdujour_page.dart';
 import '../games/picross/picross_page.dart';
 import '../games/pipopipette/pipopipette_page.dart';
 import '../games/puissance4/puissance4_page.dart';
 import '../games/taquin/taquin_page.dart';
+import '../tools/des/des_page.dart';
 
 enum TileCategory {
   soloGames('Jeux solo'),
@@ -123,6 +126,42 @@ List<SubApp> buildRegistry() {
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const AirHockeyPage()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'disque',
+      title: 'Le Disque',
+      subtitle: 'Deviner où se cache la cible',
+      icon: Icons.speed_outlined,
+      category: TileCategory.duoGames,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const DisquePage()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'cestun10',
+      title: "C'est un 10, mais…",
+      subtitle: 'Un nombre secret de 0 à 9',
+      icon: Icons.looks_one_outlined,
+      category: TileCategory.duoGames,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const CestUn10Page()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'des',
+      title: 'Dés',
+      subtitle: 'Pile ou face, D4 à D100, formules',
+      icon: Icons.casino_outlined,
+      category: TileCategory.tools,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const DesPage()),
         );
       },
     ),

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../apps/registry.dart';
@@ -138,31 +140,11 @@ class HomePage extends StatelessWidget {
                 ),
               );
               slivers.add(
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 220,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      mainAxisExtent: 172,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        final SubApp app = items[index];
-                        return _Tile(
-                          app: app,
-                          onTap: () {
-                            app.open(context, settings);
-                          },
-                          onLongPress: () {
-                            _showTileMenu(context, app);
-                          },
-                        );
-                      },
-                      childCount: items.length,
-                    ),
+                SliverToBoxAdapter(
+                  child: _CategoryStrip(
+                    items: items,
+                    onTap: (SubApp app) => app.open(context, settings),
+                    onLongPress: (SubApp app) => _showTileMenu(context, app),
                   ),
                 ),
               );
@@ -174,6 +156,66 @@ class HomePage extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+/// Tuiles d'une catégorie : bande horizontale de deux rangées. Au-delà de
+/// quatre tuiles, on glisse vers la gauche ; une colonne dépasse un peu du
+/// bord pour le signaler.
+class _CategoryStrip extends StatelessWidget {
+  const _CategoryStrip({
+    required this.items,
+    required this.onTap,
+    required this.onLongPress,
+  });
+
+  final List<SubApp> items;
+  final void Function(SubApp app) onTap;
+  final void Function(SubApp app) onLongPress;
+
+  static const double _gap = 12;
+  static const double _tileHeight = 136;
+
+  @override
+  Widget build(BuildContext context) {
+    final int rows = items.length > 2 ? 2 : 1;
+    final int columns = (items.length / rows).ceil();
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints c) {
+        final double available = c.maxWidth - 40;
+        final double tileWidth = columns <= 2
+            ? (available - _gap) / 2
+            : math.min(220, (available - _gap) / 2.35);
+        return SizedBox(
+          height: rows * _tileHeight + (rows - 1) * _gap,
+          child: GridView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            physics: columns <= 2 ? const NeverScrollableScrollPhysics() : null,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: rows,
+              mainAxisSpacing: _gap,
+              crossAxisSpacing: _gap,
+              mainAxisExtent: tileWidth,
+            ),
+            itemCount: items.length,
+            itemBuilder: (BuildContext context, int index) {
+              // Remplissage ligne par ligne (et non colonne par colonne) pour
+              // garder l'ordre de lecture : 1 2 3 / 4 5 6.
+              final int col = index ~/ rows, row = index % rows;
+              final int i = row * columns + col;
+              if (i >= items.length) return const SizedBox.shrink();
+              final SubApp app = items[i];
+              return _Tile(
+                app: app,
+                onTap: () => onTap(app),
+                onLongPress: () => onLongPress(app),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -256,13 +298,13 @@ class _Tile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
-                width: 48,
-                height: 48,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: scheme.surface.withValues(alpha: 0.75),
                 ),
-                child: Icon(app.icon, color: scheme.primary),
+                child: Icon(app.icon, color: scheme.primary, size: 22),
               ),
               const Spacer(),
               Text(
