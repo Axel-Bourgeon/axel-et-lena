@@ -60,7 +60,17 @@ Dernière mise à jour : 2026-10-08
 - [x] C'est un 10, mais… (nombre secret 0–9, devinette avec points d'équipe)
 - [x] Le Disque (façon Longueur d'onde) : banque `assets/disque/concepts.json` (230 couples + 16 thèmes, générée par un sous-agent Haiku, relue) ; 30 % des axes tirés dans un thème (deux éléments d'un même thème)
 - [x] Accueil : chaque catégorie en bande horizontale de deux rangées (on glisse au-delà de 4 tuiles)
+- [x] Mot du jour : toucher une case pour y placer une lettre (build-20)
+- [x] Section Couple en tête de l'accueil : décompte jusqu'au 1er mai 2027 (naissance) + SA (convention 41 SA) ; Réglages « Ce téléphone est celui de Axel / Léna »
+- [x] Applis couple codées (build-20), désactivées tant que `lib/couple/firebase_config.dart` est vide : Messages (dernière alerte de chacun), Bébé agenda (biberon mL, tétée, couche, dodo, autre, commentaires), Notes partagées
+- [ ] Firebase : Axel crée le projet (offre gratuite Spark, choisie le 2026-11-03), envoie google-services.json → `python scripts/firebase_config.py <fichier>` puis déployer les règles (`npx firebase-tools deploy --only firestore:rules`, après `firebase login` d'Axel)
 - [ ] Retours d'Axel et Léna après test sur téléphone
+
+## Couple / Firebase — décisions
+
+- Offre Spark (gratuite) : pas de Cloud Functions, donc pas de push serveur. Notifications = écoute Firestore en direct quand l'appli tourne + WorkManager toutes les ~15 min appli fermée (flutter_local_notifications).
+- Auth anonyme ; espace `/couples/{code}` (code 10 caractères) ; rejoindre = s'ajouter à `members` ; règles dans `firebase/firestore.rules`.
+- Hors ligne : cache local Firestore, écritures sans await.
 
 ## Idées / prochaines étapes
 
