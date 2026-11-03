@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
 import 'core/settings.dart';
+import 'couple/notifier.dart';
 import 'home/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final AppSettings settings = await AppSettings.load();
   runApp(AxelLenaApp(settings));
+  // Alertes du couple (sans effet tant que Firebase n'est pas configuré ou
+  // que les téléphones ne sont pas reliés). Une erreur réseau ne doit pas
+  // empêcher l'appli de démarrer.
+  CoupleNotifier.start(settings).catchError((Object _) {});
 }
 
 class AxelLenaApp extends StatelessWidget {

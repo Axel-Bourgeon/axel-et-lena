@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../core/launcher.dart';
 import '../core/settings.dart';
+import '../couple/baby_page.dart';
+import '../couple/cloud.dart';
+import '../couple/couple_gate.dart';
+import '../couple/messages_page.dart';
+import '../couple/notes_page.dart';
 import '../games/airhockey/airhockey_page.dart';
 import '../games/cestun10/cestun10_page.dart';
 import '../games/disque/disque_page.dart';
@@ -45,7 +50,63 @@ class SubApp {
 
 /// Liste de toutes les sous-applis. Pour en ajouter une : ajouter une entrée ici.
 List<SubApp> buildRegistry() {
+  Future<void> openCouple(
+    BuildContext context,
+    AppSettings settings,
+    String title,
+    Widget Function(CoupleCloud cloud, Person me) page,
+  ) {
+    return Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => CoupleGate(
+          title: title,
+          settings: settings,
+          builder: (BuildContext context, CoupleCloud cloud, Person me) => page(cloud, me),
+        ),
+      ),
+    );
+  }
+
   return <SubApp>[
+    SubApp(
+      id: 'messages',
+      title: 'Messages',
+      subtitle: 'Une petite alerte pour l\'autre',
+      icon: Icons.notifications_active_outlined,
+      category: TileCategory.couple,
+      open: (BuildContext context, AppSettings settings) => openCouple(
+        context,
+        settings,
+        'Messages',
+        (CoupleCloud cloud, Person me) => MessagesPage(cloud: cloud, me: me),
+      ),
+    ),
+    SubApp(
+      id: 'bebe',
+      title: 'Bébé agenda',
+      subtitle: 'Biberons, couches, dodos',
+      icon: Icons.child_care_outlined,
+      category: TileCategory.couple,
+      open: (BuildContext context, AppSettings settings) => openCouple(
+        context,
+        settings,
+        'Bébé agenda',
+        (CoupleCloud cloud, Person me) => BabyPage(cloud: cloud, me: me),
+      ),
+    ),
+    SubApp(
+      id: 'notes',
+      title: 'Notes',
+      subtitle: 'Nos notes partagées',
+      icon: Icons.sticky_note_2_outlined,
+      category: TileCategory.couple,
+      open: (BuildContext context, AppSettings settings) => openCouple(
+        context,
+        settings,
+        'Notes',
+        (CoupleCloud cloud, Person me) => NotesPage(cloud: cloud, me: me),
+      ),
+    ),
     SubApp(
       id: 'fourmis',
       title: 'Fourmis',

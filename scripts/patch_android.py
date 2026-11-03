@@ -2,6 +2,7 @@
 
 - nom affiché de l'appli
 - autorisation de lire les photos (photo au hasard)
+- build.gradle.kts : desugaring (notifications) et minSdk ≥ 23 (Firebase)
 - visibilité des applis externes (<queries>) : HabitKit, Discord, agendas
 - MainActivity avec le canal de lancement d'applis
 """
@@ -62,7 +63,24 @@ def patch_activity() -> None:
     target.write_text(template.replace("__PACKAGE__", m.group(1)), encoding="utf-8")
 
 
+GRADLE = ROOT / "android" / "app" / "build.gradle.kts"
+
+
+def patch_gradle() -> None:
+    """Desugaring (flutter_local_notifications) et minSdk 23 (Firebase)."""
+    text = GRADLE.read_text(encoding="utf-8")
+    if "isCoreLibraryDesugaringEnabled" not in text:
+        text, n = re.subn(r"compileOptions\s*\{", "compileOptions {\n        isCoreLibraryDesugaringEnabled = true", text, count=1)
+        if n == 0:
+            sys.exit("compileOptions introuvable dans build.gradle.kts")
+        text += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
+    text = re.sub(r"minSdk\s*=\s*flutter\.minSdkVersion", "minSdk = maxOf(flutter.minSdkVersion, 23)", text)
+    GRADLE.write_text(text, encoding="utf-8")
+
+
 if __name__ == "__main__":
     patch_manifest()
     patch_activity()
+    patch_gradle()
+    print(GRADLE.read_text(encoding="utf-8"))
     print(MANIFEST.read_text(encoding="utf-8"))
