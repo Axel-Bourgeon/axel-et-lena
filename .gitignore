@@ -9,3 +9,4 @@ ios/
 *.iml
 .metadata
 pubspec.lock
+google-services.json
