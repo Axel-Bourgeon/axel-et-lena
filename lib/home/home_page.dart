@@ -123,7 +123,8 @@ class HomePage extends StatelessWidget {
               final List<SubApp> items = visible
                   .where((SubApp a) => a.category == category)
                   .toList();
-              if (items.isEmpty) continue;
+              final bool isCouple = category == TileCategory.couple;
+              if (items.isEmpty && !isCouple) continue;
 
               slivers.add(
                 SliverToBoxAdapter(
@@ -139,6 +140,11 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               );
+              if (isCouple) {
+                slivers.add(const SliverToBoxAdapter(child: _BabyCard()));
+                if (items.isEmpty) continue;
+                slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 12)));
+              }
               slivers.add(
                 SliverToBoxAdapter(
                   child: _CategoryStrip(
@@ -216,6 +222,69 @@ class _CategoryStrip extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Décompte jusqu'à la naissance du bébé, avec la semaine de grossesse.
+class _BabyCard extends StatelessWidget {
+  const _BabyCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme scheme = theme.colorScheme;
+    final DateTime now = DateTime.now();
+    final BabyCountdown b = BabyCountdown(
+      kBabyDueDate,
+      DateTime.utc(now.year, now.month, now.day),
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Material(
+        color: scheme.tertiaryContainer.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(24),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+          child: Row(
+            children: <Widget>[
+              Icon(Icons.child_friendly_outlined, size: 36, color: scheme.onTertiaryContainer),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      b.label,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onTertiaryContainer,
+                      ),
+                    ),
+                    if (b.pregnancyLabel.isNotEmpty) ...<Widget>[
+                      const SizedBox(height: 2),
+                      Text(
+                        '${b.pregnancyLabel} · prévu le 1er mai 2027',
+                        style: theme.textTheme.bodySmall?.copyWith(color: scheme.onTertiaryContainer),
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: b.progress,
+                          minHeight: 6,
+                          color: scheme.tertiary,
+                          backgroundColor: scheme.surface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -20,7 +20,10 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
   late int _day;
   late String _answer;
   final List<String> _guesses = [];
-  String _typing = '';
+  /// Lettres de l'essai en cours ('' = case vide) et case sélectionnée : on
+  /// peut toucher une case pour y placer une lettre, dans n'importe quel ordre.
+  final List<String> _cells = List.filled(WordOfTheDay.length, '');
+  int _cursor = 0;
   bool _shake = false;
 
   String get _key => 'motdujour.$_day';
@@ -52,29 +55,51 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
     });
   }
 
+  /// Place la lettre dans la case sélectionnée, puis va à la prochaine case vide.
   void _type(String letter) {
-    if (_over || _typing.length >= WordOfTheDay.length) return;
-    setState(() => _typing += letter);
+    if (_over) return;
+    setState(() {
+      _cells[_cursor] = letter;
+      for (int k = 1; k <= WordOfTheDay.length; k++) {
+        final j = (_cursor + k) % WordOfTheDay.length;
+        if (_cells[j].isEmpty) {
+          _cursor = j;
+          return;
+        }
+      }
+      if (_cursor < WordOfTheDay.length - 1) _cursor++;
+    });
   }
 
+  /// Efface la case sélectionnée, ou la précédente si elle est déjà vide.
   void _back() {
-    if (_over || _typing.isEmpty) return;
-    setState(() => _typing = _typing.substring(0, _typing.length - 1));
+    if (_over) return;
+    setState(() {
+      if (_cells[_cursor].isEmpty && _cursor > 0) _cursor--;
+      _cells[_cursor] = '';
+    });
+  }
+
+  void _select(int i) {
+    if (_over) return;
+    setState(() => _cursor = i);
   }
 
   Future<void> _enter() async {
     if (_over) return;
-    if (_typing.length < WordOfTheDay.length) {
+    if (_cells.any((c) => c.isEmpty)) {
       _refuse('Il faut 5 lettres');
       return;
     }
-    if (!_engine!.isValid(_typing)) {
+    final word = _cells.join();
+    if (!_engine!.isValid(word)) {
       _refuse('Mot inconnu');
       return;
     }
     setState(() {
-      _guesses.add(_typing);
-      _typing = '';
+      _guesses.add(word);
+      _cells.fillRange(0, _cells.length, '');
+      _cursor = 0;
     });
     await _prefs!.setStringList(_key, _guesses);
     if (_over) await _recordStats();
@@ -171,9 +196,12 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
 
   Widget _row(int r, ColorScheme scheme) {
     final done = r < _guesses.length;
-    final word = done ? _guesses[r] : (r == _guesses.length ? _typing : '');
-    final states = done ? WordOfTheDay.score(word, _answer) : null;
-    final shaking = _shake && r == _guesses.length;
+    final current = r == _guesses.length && !_over;
+    final letters = done
+        ? _guesses[r].split('')
+        : (current ? _cells : List.filled(WordOfTheDay.length, ''));
+    final states = done ? WordOfTheDay.score(_guesses[r], _answer) : null;
+    final shaking = _shake && current;
     return AnimatedSlide(
       offset: shaking ? const Offset(0.03, 0) : Offset.zero,
       duration: const Duration(milliseconds: 60),
@@ -181,7 +209,9 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
         children: [
           for (int i = 0; i < WordOfTheDay.length; i++)
             Expanded(
-              child: Padding(
+              child: GestureDetector(
+                onTap: current ? () => _select(i) : null,
+                child: Padding(
                 padding: const EdgeInsets.all(3),
                 child: AnimatedContainer(
                   duration: Duration(milliseconds: 250 + i * 90),
@@ -189,7 +219,12 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
                     color: states == null ? null : _stateColor(states[i], scheme),
                     borderRadius: BorderRadius.circular(8),
                     border: states == null
-                        ? Border.all(color: i < word.length ? scheme.onSurfaceVariant : scheme.outlineVariant, width: 2)
+                        ? Border.all(
+                            color: current && i == _cursor
+                                ? scheme.primary
+                                : (letters[i].isNotEmpty ? scheme.onSurfaceVariant : scheme.outlineVariant),
+                            width: current && i == _cursor ? 3 : 2,
+                          )
                         : null,
                   ),
                   alignment: Alignment.center,
@@ -197,7 +232,7 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: Text(
-                        i < word.length ? word[i].toUpperCase() : '',
+                        letters[i].toUpperCase(),
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
@@ -207,6 +242,7 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
                     ),
                   ),
                 ),
+              ),
               ),
             ),
         ],

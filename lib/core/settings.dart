@@ -22,6 +22,17 @@ enum CalendarApp {
   final String? deepLink;
 }
 
+/// Qui utilise ce téléphone (pour les applis partagées du couple).
+enum Person {
+  axel('Axel'),
+  lena('Léna');
+
+  const Person(this.label);
+  final String label;
+
+  Person get other => this == axel ? lena : axel;
+}
+
 /// Couleur de base par défaut (vert sauge doux).
 const int kDefaultSeedColor = 0xFF6B8E7F;
 
@@ -42,6 +53,7 @@ const String _kThemeModeKey = 'settings.themeMode';
 const String _kDiscordKey = 'settings.discordServerId';
 const String _kHiddenTilesKey = 'settings.hiddenTiles';
 const String _kCalendarKey = 'settings.calendarApp';
+const String _kMeKey = 'settings.me';
 
 class AppSettings extends ChangeNotifier {
   AppSettings._(
@@ -51,11 +63,13 @@ class AppSettings extends ChangeNotifier {
     required String discordServerId,
     required List<String> hiddenTiles,
     required CalendarApp calendarApp,
+    required Person? me,
   })  : _seedColor = seedColor,
         _themeMode = themeMode,
         _discordServerId = discordServerId,
         _hiddenTiles = hiddenTiles,
-        _calendarApp = calendarApp;
+        _calendarApp = calendarApp,
+        _me = me;
 
   final SharedPreferences _prefs;
 
@@ -64,6 +78,7 @@ class AppSettings extends ChangeNotifier {
   String _discordServerId;
   List<String> _hiddenTiles;
   CalendarApp _calendarApp;
+  Person? _me;
 
   /// Charge les réglages depuis le stockage local.
   static Future<AppSettings> load() async {
@@ -81,6 +96,7 @@ class AppSettings extends ChangeNotifier {
         (CalendarApp c) => c.name == prefs.getString(_kCalendarKey),
         orElse: () => CalendarApp.google,
       ),
+      me: Person.values.where((Person p) => p.name == prefs.getString(_kMeKey)).firstOrNull,
     );
   }
 
@@ -112,6 +128,16 @@ class AppSettings extends ChangeNotifier {
   List<String> get hiddenTiles => List<String>.unmodifiable(_hiddenTiles);
 
   CalendarApp get calendarApp => _calendarApp;
+
+  /// null tant que la personne n'a pas choisi dans les Réglages.
+  Person? get me => _me;
+
+  Future<void> setMe(Person value) async {
+    if (value == _me) return;
+    _me = value;
+    notifyListeners();
+    await _prefs.setString(_kMeKey, value.name);
+  }
 
   bool isHidden(String id) => _hiddenTiles.contains(id);
 

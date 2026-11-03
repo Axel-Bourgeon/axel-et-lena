@@ -14,6 +14,7 @@ import '../games/taquin/taquin_page.dart';
 import '../tools/des/des_page.dart';
 
 enum TileCategory {
+  couple('Couple'),
   soloGames('Jeux solo'),
   duoGames('Jeux à deux'),
   tools('Outils'),

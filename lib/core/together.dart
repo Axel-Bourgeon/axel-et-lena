@@ -54,6 +54,38 @@ DateTime _addMonths(DateTime d, int months) {
   return DateTime.utc(year, month, d.day > lastDay ? lastDay : d.day);
 }
 
+/// Date prévue de naissance du bébé.
+final DateTime kBabyDueDate = DateTime.utc(2027, 5, 1);
+
+/// Décompte jusqu'à la naissance. [today] : date UTC à minuit.
+class BabyCountdown {
+  BabyCountdown(this.dueDate, this.today);
+
+  final DateTime dueDate;
+  final DateTime today;
+
+  int get daysLeft => dueDate.difference(today).inDays;
+
+  /// Semaines d'aménorrhée : le terme est à 41 SA (287 jours après le début
+  /// des dernières règles, convention française).
+  int get _daysSinceStart => 287 - daysLeft;
+  int get weeks => _daysSinceStart ~/ 7;
+  int get extraDays => _daysSinceStart % 7;
+
+  String get label {
+    if (daysLeft > 1) return 'Bébé arrive dans ${formatThousands(daysLeft)} jours';
+    if (daysLeft == 1) return 'Bébé arrive demain !';
+    if (daysLeft == 0) return "C'est le grand jour !";
+    return 'Bébé est là depuis ${formatThousands(-daysLeft)} jour${-daysLeft > 1 ? 's' : ''}';
+  }
+
+  /// Ex. « 15 SA + 3 j » (vide après la naissance).
+  String get pregnancyLabel => daysLeft < 0 ? '' : '$weeks SA${extraDays > 0 ? ' + $extraDays j' : ''}';
+
+  /// Avancement de la grossesse, de 0 à 1.
+  double get progress => (_daysSinceStart / 287).clamp(0.0, 1.0);
+}
+
 /// 3417 → « 3 417 » (espace fine insécable).
 String formatThousands(int n) {
   final String s = n.toString();

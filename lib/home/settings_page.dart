@@ -63,6 +63,22 @@ class _SettingsPageState extends State<SettingsPage> {
             return ListView(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
               children: <Widget>[
+                _sectionTitle(context, 'Ce téléphone est celui de'),
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<Person>(
+                    showSelectedIcon: false,
+                    emptySelectionAllowed: true,
+                    segments: <ButtonSegment<Person>>[
+                      for (final Person p in Person.values)
+                        ButtonSegment<Person>(value: p, label: Text(p.label)),
+                    ],
+                    selected: <Person>{if (settings.me != null) settings.me!},
+                    onSelectionChanged: (Set<Person> selection) {
+                      if (selection.isNotEmpty) settings.setMe(selection.first);
+                    },
+                  ),
+                ),
                 _sectionTitle(context, 'Thème'),
                 SizedBox(
                   width: double.infinity,

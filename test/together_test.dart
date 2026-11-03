@@ -26,6 +26,15 @@ void main() {
     expect(s.restDays, 1);
   });
 
+  test('décompte bébé', () {
+    final b = BabyCountdown(DateTime.utc(2027, 5, 1), DateTime.utc(2026, 11, 3));
+    expect(b.daysLeft, 179);
+    expect(b.label, 'Bébé arrive dans 179 jours');
+    expect(b.pregnancyLabel, '15 SA + 3 j');
+    expect(BabyCountdown(DateTime.utc(2027, 5, 1), DateTime.utc(2027, 4, 30)).label, 'Bébé arrive demain !');
+    expect(BabyCountdown(DateTime.utc(2027, 5, 1), DateTime.utc(2027, 5, 3)).pregnancyLabel, isEmpty);
+  });
+
   test('séparateur de milliers', () {
     expect(formatThousands(3417), '3 417');
     expect(formatThousands(999), '999');
