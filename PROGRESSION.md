@@ -63,7 +63,7 @@ Dernière mise à jour : 2026-10-08
 - [x] Mot du jour : toucher une case pour y placer une lettre (build-20)
 - [x] Section Couple en tête de l'accueil : décompte jusqu'au 1er mai 2027 (naissance) + SA (convention 41 SA) ; Réglages « Ce téléphone est celui de Axel / Léna »
 - [x] Applis couple codées (build-20), désactivées tant que `lib/couple/firebase_config.dart` est vide : Messages (dernière alerte de chacun), Bébé agenda (biberon mL, tétée, couche, dodo, autre, commentaires), Notes partagées
-- [ ] Firebase : Axel crée le projet (offre gratuite Spark, choisie le 2026-11-03), envoie google-services.json → `python scripts/firebase_config.py <fichier>` puis déployer les règles (`npx firebase-tools deploy --only firestore:rules`, après `firebase login` d'Axel)
+- [x] Firebase configuré le 2026-11-04 (build-21) : projet `lenaaxel-d83e0`, règles déployées (`npx firebase-tools deploy --only firestore:rules`, CLI connecté sur le PC d'Axel)
 - [ ] Retours d'Axel et Léna après test sur téléphone
 
 ## Couple / Firebase — décisions
