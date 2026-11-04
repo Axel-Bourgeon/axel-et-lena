@@ -82,10 +82,10 @@ Dernière mise à jour : 2026-10-08
 ## Plan « grosse update » (décidé le 2026-11-04)
 
 Phase 1 — avant la naissance :
-- [ ] Réglages : « Notre espace » (revoir le code de liaison)
-- [ ] Minuteur de contractions partagé (alerte 5-1-1 : toutes les 5 min pendant 1 h)
-- [ ] Check-list valise maternité partagée
-- [ ] Appli « Conseils bébé » : par âge et par thème, hors ligne, sources officielles citées (ameli, Santé publique France / 1000 premiers jours, HAS, OMS), urgences avec numéros
+- [x] Réglages : « Notre espace » (revoir le code de liaison) (build-23)
+- [x] Minuteur de contractions partagé (alerte 5-1-1 : toutes les 5 min pendant 1 h) (build-23)
+- [x] Check-list valise maternité partagée (build-23)
+- [x] (build-23, 28 fiches dans assets/conseils/conseils.json) Appli « Conseils bébé » : par âge et par thème, hors ligne, sources officielles citées (ameli, Santé publique France / 1000 premiers jours, HAS, OMS), urgences avec numéros
 
 Phase 2 — pour avril :
 - [ ] Agenda : dodo avec chrono partagé ou heures début/fin ; tétée avec durée et côté
