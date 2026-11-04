@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../core/settings.dart';
 import '../home/settings_page.dart';
+import 'backup.dart';
 import 'cloud.dart';
 import 'notifier.dart';
 
@@ -180,6 +181,17 @@ class _CoupleGateState extends State<CoupleGate> {
             ? null
             : () => _run(() async {
                   await cloud.join(_codeField.text);
+                  // Téléphone réinstallé : on récupère ses réglages et stats.
+                  try {
+                    if (await LocalBackup.restore(cloud, me.name)) {
+                      await widget.settings.reload();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Réglages et statistiques restaurés')),
+                        );
+                      }
+                    }
+                  } catch (_) {}
                   if (mounted) setState(() {});
                 }),
         child: _busy ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Rejoindre'),

@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../core/settings.dart';
+import 'backup.dart';
 import 'cloud.dart';
 
 /// Notifications des alertes du couple, sans serveur (offre Firebase gratuite) :
@@ -51,6 +52,8 @@ class CoupleNotifier {
       constraints: Constraints(networkType: NetworkType.connected),
       existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
     );
+
+    LocalBackup.save(cloud, me.name).catchError((Object _) {});
 
     final prefs = await SharedPreferences.getInstance();
     await _sub?.cancel();
@@ -99,6 +102,7 @@ class CoupleNotifier {
     if (cloud == null || !cloud.paired) return true;
     final snap = await cloud.alerts.doc(me.other.name).get(const GetOptions(source: Source.server));
     await _check(snap.data(), me.other, prefs);
+    await LocalBackup.save(cloud, me.name);
     return true;
   }
 }

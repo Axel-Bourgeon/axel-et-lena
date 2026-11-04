@@ -100,6 +100,19 @@ class AppSettings extends ChangeNotifier {
     );
   }
 
+  /// Relit les réglages (après une restauration depuis la sauvegarde).
+  Future<void> reload() async {
+    await _prefs.reload();
+    final AppSettings fresh = await load();
+    _seedColor = fresh._seedColor;
+    _themeMode = fresh._themeMode;
+    _discordServerId = fresh._discordServerId;
+    _hiddenTiles = fresh._hiddenTiles;
+    _calendarApp = fresh._calendarApp;
+    _me = fresh._me;
+    notifyListeners();
+  }
+
   static ThemeMode _themeModeFromString(String? value) {
     switch (value) {
       case 'light':
