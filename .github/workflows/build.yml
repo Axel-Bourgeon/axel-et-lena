@@ -30,21 +30,24 @@ jobs:
           channel: stable
           cache: true
 
+      # Clé de signature stable (secrets RELEASE_KEYSTORE_*). Sans elle, chaque
+      # APK aurait une clé différente et ne s'installerait pas par-dessus.
+      - name: Install signing key
+        env:
+          RELEASE_KEYSTORE_B64: ${{ secrets.RELEASE_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$RELEASE_KEYSTORE_B64" ]; then
+            echo "$RELEASE_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.p12"
+            echo "RELEASE_KEYSTORE=$RUNNER_TEMP/release.p12" >> "$GITHUB_ENV"
+          elif [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "::error::Secret RELEASE_KEYSTORE_B64 absent : pas de publication avec une clé temporaire"
+            exit 1
+          fi
+
       - name: Generate Android project
         run: |
           flutter create --platforms=android --org com.axelbourgeon --project-name axel_lena .
           python3 scripts/patch_android.py
-
-      - name: Install signing key
-        env:
-          SIGNING_KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
-        run: |
-          if [ -n "$SIGNING_KEYSTORE_B64" ]; then
-            mkdir -p ~/.android
-            echo "$SIGNING_KEYSTORE_B64" | base64 -d > ~/.android/debug.keystore
-          else
-            echo "::warning::SIGNING_KEYSTORE_B64 absent : APK signé avec une clé temporaire"
-          fi
 
       # Pré-installe le NDK voulu par Flutter, avec plusieurs tentatives :
       # le téléchargement fait par Gradle échoue parfois (archive tronquée).
@@ -68,9 +71,24 @@ jobs:
       - run: flutter test
 
       - name: Build APK
+        env:
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
         run: |
           flutter build apk --release --build-number=${{ github.run_number }}
           cp build/app/outputs/flutter-apk/app-release.apk axel-et-lena.apk
+
+      # Garde-fou : l'APK publié doit être signé avec la clé attendue.
+      - name: Check signature
+        if: github.event_name != 'pull_request'
+        run: |
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n1)
+          GOT=$("$APKSIGNER" verify --print-certs axel-et-lena.apk | grep -m1 'SHA-256 digest' | awk '{print $NF}')
+          WANT=$(tr -d '[:space:]' < scripts/signing_sha256.txt)
+          echo "Signature : $GOT"
+          if [ "$GOT" != "$WANT" ]; then
+            echo "::error::Signature inattendue ($GOT au lieu de $WANT)"
+            exit 1
+          fi
 
       - uses: actions/upload-artifact@v5
         with:

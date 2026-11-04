@@ -6,6 +6,7 @@
 - visibilité des applis externes (<queries>) : HabitKit, Discord, agendas
 - MainActivity avec le canal de lancement d'applis
 """
+import os
 import pathlib
 import re
 import sys
@@ -79,6 +80,30 @@ def patch_gradle() -> None:
             sys.exit("compileOptions introuvable dans build.gradle.kts")
         text += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
     text = re.sub(r"minSdk\s*=\s*flutter\.minSdkVersion", "minSdk = maxOf(flutter.minSdkVersion, 23)", text)
+    # Signature stable : sans elle, chaque build aurait une clé différente et
+    # les mises à jour refuseraient de s'installer par-dessus.
+    if os.environ.get("RELEASE_KEYSTORE") and "create(\"release\")" not in text:
+        block = (
+            "signingConfigs {\n"
+            "        create(\"release\") {\n"
+            "            storeFile = file(System.getenv(\"RELEASE_KEYSTORE\"))\n"
+            "            storePassword = System.getenv(\"RELEASE_KEYSTORE_PASSWORD\")\n"
+            "            keyAlias = \"axel-lena\"\n"
+            "            keyPassword = System.getenv(\"RELEASE_KEYSTORE_PASSWORD\")\n"
+            "        }\n"
+            "    }\n\n"
+            "    buildTypes {"
+        )
+        text, n = re.subn(r"buildTypes\s*\{", block, text, count=1)
+        if n == 0:
+            sys.exit("buildTypes introuvable dans build.gradle.kts")
+        text, n = re.subn(
+            r'signingConfig\s*=\s*signingConfigs\.getByName\("debug"\)',
+            'signingConfig = signingConfigs.getByName("release")',
+            text,
+        )
+        if n == 0:
+            sys.exit("signingConfig de release introuvable dans build.gradle.kts")
     GRADLE.write_text(text, encoding="utf-8")
 
 

@@ -13,7 +13,7 @@ Dernière mise à jour : 2026-10-08
 
 - Pas de Flutter installé en local → compilation uniquement en CI (Java 21 présent en local).
 - Le dossier `android/` n'est pas versionné : `flutter create` en CI puis `scripts/patch_android.py` (nom de l'appli, `<queries>` HabitKit/Discord, MainActivity avec canal `axel_lena/launcher`).
-- Signature : keystore stable dans le secret GitHub `SIGNING_KEYSTORE_B64` (copié en `~/.android/debug.keystore` en CI) → les mises à jour s'installent par-dessus sans désinstaller.
+- Signature : jusqu'au build-23 la clé `SIGNING_KEYSTORE_B64` n'était PAS utilisée (chaque APK avait une clé aléatoire). Depuis le 2026-11-04 : clé `axel-lena-release.p12` (sauvegarde dans `D:\ClaudeCode\axel-et-lena-cle-signature`, hors dépôt), secrets `RELEASE_KEYSTORE_B64` / `RELEASE_KEYSTORE_PASSWORD`, signingConfig explicite (patch_android.py) et contrôle de l'empreinte en CI (`scripts/signing_sha256.txt`). Une désinstallation unique a été nécessaire.
 - L'ancien contournement Cowork (archive `incoming/app.tar.gz` déposée à la main) n'est plus utilisé.
 
 ## Décisions
