@@ -24,6 +24,10 @@ QUERIES = """
             <data android:scheme="https" />
         </intent>
         <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+        <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent>"""

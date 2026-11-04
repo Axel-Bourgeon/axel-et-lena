@@ -4,6 +4,7 @@ import '../core/launcher.dart';
 import '../core/settings.dart';
 import '../couple/baby_page.dart';
 import '../couple/bag_page.dart';
+import '../couple/conseils_page.dart';
 import '../couple/contractions_page.dart';
 import '../couple/cloud.dart';
 import '../couple/couple_gate.dart';
@@ -95,6 +96,18 @@ List<SubApp> buildRegistry() {
         'Bébé agenda',
         (CoupleCloud cloud, Person me) => BabyPage(cloud: cloud, me: me),
       ),
+    ),
+    SubApp(
+      id: 'conseils',
+      title: 'Conseils bébé',
+      subtitle: 'Repères officiels par âge',
+      icon: Icons.menu_book_outlined,
+      category: TileCategory.couple,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const ConseilsPage()),
+        );
+      },
     ),
     SubApp(
       id: 'contractions',

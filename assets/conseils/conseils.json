@@ -1,0 +1,322 @@
+{
+  "themes": [
+    {"id": "urgences", "label": "Urgences", "icon": "emergency"},
+    {"id": "alimentation", "label": "Alimentation", "icon": "restaurant"},
+    {"id": "sommeil", "label": "Sommeil", "icon": "bedtime"},
+    {"id": "sante", "label": "Santé", "icon": "healing"},
+    {"id": "soins", "label": "Soins", "icon": "bathtub"},
+    {"id": "eveil", "label": "Éveil et développement", "icon": "toys"},
+    {"id": "securite", "label": "Sécurité à la maison", "icon": "shield"},
+    {"id": "demarches", "label": "Démarches", "icon": "description"}
+  ],
+  "numbers": [
+    {"label": "SAMU", "number": "15", "detail": "Urgence médicale"},
+    {"label": "Numéro d'urgence européen", "number": "112", "detail": "Depuis n'importe quel téléphone, même bloqué"},
+    {"label": "Urgences par SMS", "number": "114", "detail": "Pour les personnes sourdes, malentendantes ou qui ne peuvent pas parler"},
+    {"label": "Centre antipoison", "number": "0140054848", "detail": "Centre de Paris, joignable de toute la France, 24 h/24"},
+    {"label": "Enfance en danger", "number": "119", "detail": "24 h/24, aussi si l'on a peur de secouer son bébé"},
+    {"label": "Allô parents bébé", "number": "0800003456", "detail": "Écoute gratuite, lundi au vendredi 10 h–13 h et 14 h–18 h"}
+  ],
+  "advice": [
+    {
+      "id": "etouffement-bebe",
+      "theme": "urgences",
+      "title": "Bébé s'étouffe (moins de 1 an)",
+      "minMonths": 0, "maxMonths": 12,
+      "urgent": true,
+      "body": "S'il tousse fort et pleure : ne faites rien, il est en train de dégager l'objet. Restez près de lui et surveillez.\n\nS'il ne peut plus tousser, ni pleurer, ni respirer (lèvres bleues, pas de bruit) :\n• Faites appeler le 15 ou le 112 tout de suite.\n• Asseyez-vous, couchez bébé à plat ventre sur votre avant-bras ou votre cuisse, la tête plus basse que le corps, en tenant sa mâchoire.\n• Donnez jusqu'à 5 claques fermes entre les omoplates, avec le plat de la main.\n• Si l'objet n'est pas sorti : retournez-le sur le dos, tête soutenue, et faites 5 compressions avec 2 doigts au milieu de la poitrine (sur le sternum).\n• Alternez 5 claques et 5 compressions jusqu'à ce que l'objet sorte ou que les secours arrivent.\n• S'il ne réagit plus : commencez le massage cardiaque en suivant les consignes du SAMU au téléphone.\n\nÀ ne jamais faire : mettre les doigts dans sa bouche à l'aveugle, le suspendre par les pieds.\n\nUne consultation à l'hôpital est nécessaire dans tous les cas, même si tout semble rentré dans l'ordre.\n\nLe mieux est de suivre une formation aux premiers secours pédiatriques (Croix-Rouge, Protection civile).",
+      "sources": [
+        {"name": "ameli.fr – Corps étranger inhalé", "url": "https://www.ameli.fr/assure/sante/urgence/corps-etrangers/inhale"},
+        {"name": "Croix-Rouge – Que faire si mon bébé s'étouffe ?", "url": "https://www.croix-rouge.fr/mes-infos-bebe/que-faire-si-mon-bebe-setouffe"}
+      ]
+    },
+    {
+      "id": "etouffement-enfant",
+      "theme": "urgences",
+      "title": "L'enfant s'étouffe (après 1 an)",
+      "minMonths": 12, "maxMonths": 36,
+      "urgent": true,
+      "body": "S'il tousse efficacement : laissez-le tousser, assis ou debout, sans taper dans le dos.\n\nS'il ne peut plus respirer ni parler :\n• Faites appeler le 15 ou le 112.\n• Penchez-le vers l'avant en soutenant sa poitrine et donnez jusqu'à 5 claques fermes entre les omoplates.\n• Si cela ne suffit pas : placez-vous derrière lui, poing entre le nombril et le bas du sternum, et tirez d'un coup sec vers vous et vers le haut (manœuvre de Heimlich), jusqu'à 5 fois.\n• Alternez 5 claques et 5 compressions jusqu'à expulsion ou arrivée des secours.\n\nNe l'allongez pas et ne mettez pas les doigts dans sa bouche. Consultez ensuite dans tous les cas.",
+      "sources": [
+        {"name": "ameli.fr – Corps étranger inhalé", "url": "https://www.ameli.fr/assure/sante/urgence/corps-etrangers/inhale"}
+      ]
+    },
+    {
+      "id": "bebe-secoue",
+      "theme": "urgences",
+      "title": "Ne jamais secouer un bébé",
+      "minMonths": 0, "maxMonths": 24,
+      "urgent": true,
+      "body": "Secouer un bébé, même quelques secondes, peut causer des lésions graves du cerveau, voire la mort.\n\nQuand les pleurs deviennent insupportables :\n• Vérifiez les besoins de base : faim, couche, fièvre, trop chaud ou trop froid.\n• Si vous êtes à bout : couchez-le sur le dos dans son lit, sortez de la pièce, fermez la porte et prenez quelques minutes pour vous calmer.\n• Appelez quelqu'un pour vous relayer.\n• Si vous sentez que vous pourriez le secouer : appelez le 119 (24 h/24).\n\nPrévenez aussi toutes les personnes qui gardent bébé.",
+      "sources": [
+        {"name": "ameli.fr – Syndrome du bébé secoué", "url": "https://www.ameli.fr/assure/sante/urgence/bebe-enfant/syndrome-bebe-secoue"}
+      ]
+    },
+    {
+      "id": "fievre-urgence",
+      "theme": "urgences",
+      "title": "Fièvre : quand c'est urgent",
+      "minMonths": 0, "maxMonths": 36,
+      "urgent": true,
+      "body": "On parle de fièvre au-dessus de 38 °C.\n\nConsultez en urgence (ou appelez le 15) :\n• Toute fièvre chez un bébé de moins de 3 mois, même s'il semble bien aller.\n• Température au-dessus de 40 °C.\n• État qui se dégrade : refus de boire, somnolence inhabituelle, peau marbrée.\n• Raideur de la nuque, vomissements, maux de tête importants.\n• Signes de déshydratation, difficultés à respirer.\n\nConsultez dans la journée :\n• Fièvre de plus de 2 jours (avant 2 ans).\n• Fièvre qui revient après plus de 24 h sans fièvre.\n• Convulsions avec la fièvre, ou tout autre symptôme qui inquiète.",
+      "sources": [
+        {"name": "ameli.fr – Fièvre de l'enfant : quand consulter", "url": "https://www.ameli.fr/assure/sante/themes/fievre-enfant/bons-reflexes-cas-faut-consulter"}
+      ]
+    },
+    {
+      "id": "brulure",
+      "theme": "urgences",
+      "title": "Brûlure",
+      "minMonths": 0, "maxMonths": 36,
+      "urgent": true,
+      "body": "• Refroidissez tout de suite la brûlure sous l'eau tempérée pendant 20 minutes.\n• N'appliquez ni beurre, ni huile, ni crème grasse.\n• Chez un tout-petit, consultez quelle que soit la taille de la brûlure.\n• Brûlure étendue ou profonde, ou bébé qui va mal : appelez le 15.",
+      "sources": [
+        {"name": "ameli.fr – Brûlures de la peau", "url": "https://www.ameli.fr/assure/sante/urgence/accidents-domestiques/brulures-peau"}
+      ]
+    },
+    {
+      "id": "intoxication",
+      "theme": "urgences",
+      "title": "Il a avalé un produit ou un médicament",
+      "minMonths": 0, "maxMonths": 36,
+      "urgent": true,
+      "body": "• Ne le faites pas vomir et ne lui donnez rien à boire (pas de lait).\n• Gardez l'emballage du produit.\n• Appelez un centre antipoison, ou le 15 s'il est somnolent, a du mal à respirer ou convulse.",
+      "sources": [
+        {"name": "ameli.fr – Intoxication par ingestion", "url": "https://www.ameli.fr/assure/sante/urgence/accidents-domestiques/intoxication-voie-orale-ingestion"}
+      ]
+    },
+    {
+      "id": "lait-0-4",
+      "theme": "alimentation",
+      "title": "Les premiers mois : du lait, rien que du lait",
+      "minMonths": 0, "maxMonths": 6,
+      "body": "Jusqu'à 4 à 6 mois, le lait (maternel ou lait infantile 1er âge) est le seul aliment de bébé.\n\n• Au sein : à la demande au début, puis les tétées s'espacent peu à peu.\n• Au biberon : les premières semaines, bébé mange environ toutes les 3 à 4 heures, soit 5 à 7 biberons par jour, et la quantité par biberon augmente avec l'âge. Les quantités exactes sont à voir avec le pédiatre, la sage-femme ou la PMI.\n\nIl a faim s'il pleure, s'agite, ouvre la bouche quand le biberon approche. Il est rassasié s'il ralentit, arrête de téter, recrache la tétine ou s'endort. Ne le forcez pas à finir.\n\nÉvitez le biberon pour l'endormir ou entre les repas (risque de caries). Pas de miel avant 1 an (risque de botulisme).",
+      "sources": [
+        {"name": "ameli.fr – Les premiers mois : du lait uniquement", "url": "https://www.ameli.fr/assure/sante/themes/alimentation/alimentation-0-3-ans/premiers-mois-lait-uniquement"},
+        {"name": "1000 premiers jours – L'alimentation de 0 à 4 mois", "url": "https://1000-premiers-jours.fr/fr/lalimentation-de-0-4-mois-du-lait-rien-que-du-lait"}
+      ]
+    },
+    {
+      "id": "biberon-preparation",
+      "theme": "alimentation",
+      "title": "Préparer un biberon",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "• Lavez-vous les mains.\n• Eau : eau froide du robinet (laissez couler 1 à 2 minutes si elle n'a pas servi depuis des heures), ou eau en bouteille portant la mention « convient pour la préparation des aliments des nourrissons ». Pas d'eau filtrée ou adoucie.\n• Versez d'abord l'eau, puis 1 dose rase de poudre pour 30 mL d'eau. Arasez avec le dos d'un couteau propre, sans tasser.\n• Agitez bien jusqu'à disparition des grumeaux.\n\nTempérature : il peut être bu à température ambiante. S'il sort du frigo, réchauffez-le au bain-marie ou au chauffe-biberon, sans dépasser 37 °C. Jamais au micro-ondes (risque de brûlure). Testez quelques gouttes à l'intérieur du poignet.\n\nConservation :\n• Préparez-le de préférence juste avant de le donner.\n• À température ambiante : 1 heure maximum. Réchauffé : à boire dans la demi-heure.\n• Un biberon entamé ne se garde jamais pour la fois suivante.\n• En sortie : l'eau dans le biberon, la poudre à part, mélange au dernier moment.\n\nNettoyage : stériliser est inutile. Rincez à l'eau froide, puis lavez à l'eau chaude avec liquide vaisselle et goupillon (ou lave-vaisselle à 65 °C), séchage à l'air libre, tête en bas.",
+      "sources": [
+        {"name": "ameli.fr – Bien préparer un biberon", "url": "https://www.ameli.fr/assure/sante/bons-gestes/bebe/preparer-biberon"},
+        {"name": "Anses – Hygiène de préparation des biberons", "url": "https://www.anses.fr/fr/system/files/MIC-Ra-BIB.pdf"}
+      ]
+    },
+    {
+      "id": "vitamines",
+      "theme": "alimentation",
+      "title": "Vitamines D et K",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "• Vitamine D : nécessaire pour tous les bébés, allaités ou au lait infantile. Elle est prescrite dès les premiers jours ; le médecin indique la dose et la durée. Préférez le médicament prescrit aux compléments achetés en ligne : un surdosage est dangereux pour les reins.\n• Vitamine K : à donner aux bébés allaités (solution buvable). Les laits infantiles en contiennent déjà.",
+      "sources": [
+        {"name": "ameli.fr – Les premiers mois : du lait uniquement", "url": "https://www.ameli.fr/assure/sante/themes/alimentation/alimentation-0-3-ans/premiers-mois-lait-uniquement"}
+      ]
+    },
+    {
+      "id": "diversification",
+      "theme": "alimentation",
+      "title": "Commencer la diversification",
+      "minMonths": 4, "maxMonths": 12,
+      "body": "Quand ? Entre 4 mois révolus et 6 mois. Pas avant 4 mois, et pas après 6 mois, y compris pour les bébés à risque d'allergie.\n\nComment ?\n• Pas d'ordre imposé : légumes, fruits, féculents, viande, poisson, œuf, légumes secs, produits laitiers peuvent tous être introduits entre 4 et 6 mois, en variant chaque jour.\n• Légumes bien tolérés pour commencer : haricots verts, carottes, courgettes sans peau ni pépins.\n• Viande, poisson ou œuf : une fois par jour maximum, environ 10 g (2 cuillères à café) ou 1/4 d'œuf dur, bien cuits. Poisson 2 fois par semaine.\n• Allergènes majeurs (produits laitiers, œuf, arachide) : à introduire rapidement, allergie ou pas dans la famille.\n• Ajoutez une petite matière grasse aux plats salés (huile de colza ou d'olive, noisette de beurre).\n• Ni sel ni miel avant 1 an. Pas de jus de fruits avant 6 mois.\n\nLe lait reste la base : au moins 500 mL par jour (lait maternel, 1er puis 2e âge).\n\nTextures : lisse de 4 à 8 mois, moulinée de 8 à 10 mois, petits morceaux à partir de 10 mois. À 8 mois : 4 repas par jour, dont 2 diversifiés.",
+      "sources": [
+        {"name": "ameli.fr – La diversification alimentaire", "url": "https://www.ameli.fr/assure/sante/themes/alimentation/alimentation-0-3-ans/debut-diversification-alimentaire"},
+        {"name": "Manger Bouger – Tableau de diversification jusqu'à 3 ans", "url": "https://www.mangerbouger.fr/content/show/1498/file/Tableau_diversification_alimentaire_jusqu'a_3_ans.pdf"}
+      ]
+    },
+    {
+      "id": "couchage",
+      "theme": "sommeil",
+      "title": "Coucher bébé en sécurité",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "Pour prévenir la mort inattendue du nourrisson :\n• Toujours sur le dos, pour la nuit comme pour les siestes, dès la naissance. Ne le forcez plus à rester sur le dos quand il sait se retourner seul.\n• Matelas ferme, à la taille du lit, drap-housse bien ajusté. Pas de second matelas dans un lit parapluie.\n• Lit vide : pas d'oreiller, couette, tour de lit, peluche volumineuse ni cale-bébé.\n• Une gigoteuse à sa taille plutôt qu'une couverture (pas de couette avant 3 ans). Nuque ni moite ni froide.\n• Chambre à 18–20 °C, aérée chaque jour.\n• Dans la chambre des parents, mais dans son propre lit, pendant les 6 premiers mois. Évitez de dormir avec lui dans votre lit, et jamais sur un canapé ou un fauteuil.\n• Pas de tabac près de lui.\n• Tétine possible pour dormir, sans attache ni cordon.",
+      "sources": [
+        {"name": "ameli.fr – Comment bien coucher un bébé ?", "url": "https://www.ameli.fr/assure/sante/bons-gestes/bebe/coucher-bebe"}
+      ]
+    },
+    {
+      "id": "besoins-sommeil",
+      "theme": "sommeil",
+      "title": "Combien de temps dort un bébé ?",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "Repères par 24 heures (chaque bébé est différent, à 2 ou 3 heures près) :\n• 0 à 3 mois : 14 à 17 heures, en courtes périodes jour et nuit.\n• 4 à 11 mois : 12 à 15 heures, avec des nuits qui s'allongent.\n• 1 à 2 ans : 11 à 14 heures, siestes comprises.\n• 3 à 5 ans : 10 à 13 heures.\n\nUn bébé qui dort beaucoup ou peu n'est pas forcément un problème : c'est son comportement éveillé qui compte. Parlez-en au médecin en cas de doute.",
+      "sources": [
+        {"name": "ameli.fr – Sommeil de l'enfant", "url": "https://www.ameli.fr/assure/sante/themes/troubles-sommeil-enfant/sommeil-enfant-importance-troubles-etapes"},
+        {"name": "Réseau Morphée – Besoins en sommeil", "url": "https://sommeilenfant.reseau-morphee.fr/en-savoir-plus/besoins-en-sommeil/"}
+      ]
+    },
+    {
+      "id": "pleurs",
+      "theme": "sante",
+      "title": "Pleurs et coliques",
+      "minMonths": 0, "maxMonths": 6,
+      "body": "Un bébé en bonne santé peut pleurer 2 à 3 heures par jour. Les pleurs inexpliqués sont les plus fréquents vers 6 à 8 semaines.\n\nCe qui apaise souvent : le porter, le bercer lentement, une promenade en poussette, la tétine.\n\nConsultez en urgence s'il pleure beaucoup avec de la fièvre, de la diarrhée, du sang dans les selles, des vomissements avec refus de manger, ou un comportement inhabituel. Parlez-en au médecin si les pleurs se répètent.\n\nSi vous êtes à bout : posez-le sur le dos dans son lit et sortez quelques minutes. Ne jamais le secouer.",
+      "sources": [
+        {"name": "ameli.fr – Syndrome du bébé secoué", "url": "https://www.ameli.fr/assure/sante/urgence/bebe-enfant/syndrome-bebe-secoue"},
+        {"name": "ameli.fr – Régurgitations du nourrisson", "url": "https://www.ameli.fr/assure/sante/themes/rgo-nourrisson/que-faire-quand-consulter"}
+      ]
+    },
+    {
+      "id": "regurgitations",
+      "theme": "sante",
+      "title": "Régurgitations",
+      "minMonths": 0, "maxMonths": 12,
+      "body": "Les petits renvois de lait après le repas sont fréquents et sans gravité chez un bébé qui grossit bien. Évitez de le forcer à finir son biberon.\n\nConsultez s'il ne prend pas de poids, dort mal, si les régurgitations commencent après 6 mois ou durent après 1 an.\n\nUrgence : malaise avec pâleur ou lèvres bleues pendant une régurgitation.",
+      "sources": [
+        {"name": "ameli.fr – Régurgitations du nourrisson", "url": "https://www.ameli.fr/assure/sante/themes/rgo-nourrisson/que-faire-quand-consulter"}
+      ]
+    },
+    {
+      "id": "fievre-gestes",
+      "theme": "sante",
+      "title": "Fièvre : les bons gestes",
+      "minMonths": 3, "maxMonths": 36,
+      "body": "• Pièce fraîche et aérée (18–20 °C), enlevez une couche de vêtements sans le déshabiller complètement.\n• Proposez-lui souvent à boire.\n• Pas de bain froid.\n• Un médicament n'est pas toujours utile sous 38,5 °C. Au-dessus, ou s'il est inconfortable : le paracétamol est le médicament de premier choix, dosé selon son poids (maximum 60 mg/kg par jour, en 4 à 6 prises). Utilisez la pipette fournie, au bon poids.\n• Un seul médicament à la fois : ne pas alterner sans avis médical. Pas d'aspirine. Pas d'ibuprofène avant 3 mois, ni en cas de varicelle ou de déshydratation.\n\nAvant 3 mois, toute fièvre = consultation en urgence (voir Urgences).",
+      "sources": [
+        {"name": "ameli.fr – Fièvre : bons réflexes", "url": "https://www.ameli.fr/assure/sante/themes/fievre-enfant/bons-reflexes-cas-faut-consulter"},
+        {"name": "ameli.fr – Médicaments contre la fièvre", "url": "https://www.ameli.fr/assure/sante/themes/fievre-enfant/medicaments"}
+      ]
+    },
+    {
+      "id": "vaccins",
+      "theme": "sante",
+      "title": "Vaccins obligatoires",
+      "minMonths": 0, "maxMonths": 24,
+      "body": "Calendrier des vaccins obligatoires (les méningocoques ACWY et B le sont depuis 2025) :\n\n• 2 mois : diphtérie, tétanos, polio, coqueluche, Haemophilus b, hépatite B (vaccin combiné) + pneumocoque.\n• 3 mois : méningocoque B.\n• 4 mois : vaccin combiné + pneumocoque.\n• 5 mois : méningocoque B.\n• 6 mois : méningocoques ACWY.\n• 11 mois : rappel vaccin combiné + pneumocoque.\n• 12 mois : rougeole-oreillons-rubéole (ROR), méningocoques ACWY et B.\n• 16 à 18 mois : 2e dose de ROR.\n\nLe médecin ou la PMI adapte le calendrier si besoin (prématurité, retard). Ces vaccins conditionnent l'entrée en crèche.",
+      "sources": [
+        {"name": "ameli.fr – Vaccins obligatoires du nourrisson", "url": "https://www.ameli.fr/assure/sante/themes/vaccination/vaccins-obligatoires"},
+        {"name": "Vaccination Info Service – Méningocoques ACWY et B obligatoires", "url": "https://professionnels.vaccination-info-service.fr/Toutes-les-actualites/Meningocoque-ACWY-et-B-vaccinations-desormais-obligatoires-chez-le-nourrisson"}
+      ]
+    },
+    {
+      "id": "examens",
+      "theme": "sante",
+      "title": "Les examens médicaux de suivi",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "20 examens de suivi sont prévus de la naissance à 16 ans, remboursés à 100 %.\n\n• Dans les 8 jours : examen approfondi, 1er certificat de santé.\n• 2e semaine, puis avant la fin du 1er mois.\n• Puis environ chaque mois jusqu'à 6 mois.\n• Vers 8–9 mois : examen approfondi, 2e certificat.\n• Vers 11–13 mois, puis 16–18 mois.\n• Vers 23–24 mois : examen approfondi, 3e certificat.\n\nPensez à apporter le carnet de santé à chaque fois et à y noter les progrès de bébé.",
+      "sources": [
+        {"name": "ameli.fr – Suivi médical de l'enfant", "url": "https://www.ameli.fr/assure/sante/themes/suivi-medical-de-l-enfant-et-de-l-adolescent"}
+      ]
+    },
+    {
+      "id": "cordon",
+      "theme": "soins",
+      "title": "Le cordon ombilical",
+      "minMonths": 0, "maxMonths": 1,
+      "body": "Il sèche en quelques jours et tombe en 1 à 3 semaines.\n\n• Au moins une fois par jour : nettoyez à l'eau tiède et au savon, séchez soigneusement, et repliez la couche pour qu'elle ne le couvre pas.\n• Désinfecter n'est pas nécessaire. Demandez l'avis du médecin ou du pharmacien si la base rougit, suinte ou sent mauvais.",
+      "sources": [
+        {"name": "ameli.fr – Changer bébé et faire sa toilette", "url": "https://www.ameli.fr/assure/sante/bons-gestes/bebe/changer-bebe-faire-toilette"}
+      ]
+    },
+    {
+      "id": "bain",
+      "theme": "soins",
+      "title": "Le bain",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "• Possible avant la chute du cordon, à condition de bien le sécher ensuite.\n• Eau à 37 °C maximum (vérifiez au thermomètre), salle de bain entre 22 et 25 °C.\n• Préparez tout à portée de main avant (savon, serviette, vêtements).\n• Ne le laissez jamais seul dans l'eau, même quelques secondes : un bébé peut se noyer dans moins de 5 cm d'eau.",
+      "sources": [
+        {"name": "ameli.fr – Donner le bain à un bébé", "url": "https://www.ameli.fr/assure/sante/bons-gestes/bebe/donner-bain-bebe"},
+        {"name": "1000 premiers jours – Éviter les accidents domestiques", "url": "https://1000-premiers-jours.fr/fr/eviter-les-accidents-domestiques-des-enfants"}
+      ]
+    },
+    {
+      "id": "ongles",
+      "theme": "soins",
+      "title": "Couper les ongles",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "Quand il est calme (après le bain, pendant la sieste), avec des ciseaux à bout rond. Arrondissez légèrement les ongles des mains, coupez droit ceux des pieds.",
+      "sources": [
+        {"name": "ameli.fr – Changer bébé et faire sa toilette", "url": "https://www.ameli.fr/assure/sante/bons-gestes/bebe/changer-bebe-faire-toilette"}
+      ]
+    },
+    {
+      "id": "eveil-0-3",
+      "theme": "eveil",
+      "title": "Jouer avec bébé de 0 à 3 mois",
+      "minMonths": 0, "maxMonths": 3,
+      "body": "Pas besoin de jouets compliqués : vous êtes son meilleur jeu.\n• Parlez-lui, chantez, décrivez ce que vous faites.\n• Massages doux, câlins peau à peau.\n• Un mobile au-dessus du lit, qu'on fait tourner de temps en temps.\n• Un peu de temps à plat ventre sur un tapis, éveillé et toujours sous surveillance, réparti dans la journée : il muscle sa nuque et son dos.\n\nVers 2–3 mois, il sourit en réponse, réagit à votre voix et commence à tenir sa tête.",
+      "sources": [
+        {"name": "1000 premiers jours – Les activités avec bébé", "url": "https://www.1000-premiers-jours.fr/fr/les-activites-avec-bebe"},
+        {"name": "1000 premiers jours – Les étapes du développement", "url": "https://www.1000-premiers-jours.fr/fr/les-etapes-du-developpement-de-bebe"}
+      ]
+    },
+    {
+      "id": "eveil-3-9",
+      "theme": "eveil",
+      "title": "Jouer avec bébé de 3 à 9 mois",
+      "minMonths": 3, "maxMonths": 9,
+      "body": "C'est l'âge de l'exploration : il touche, porte à la bouche, fait tomber, fait du bruit.\n• Jeux au sol sur un tapis, avec des objets variés à attraper (sûrs, sans petites pièces).\n• Tendez-lui vos index pour qu'il les attrape et se redresse doucement (en tenant sa tête au début).\n• Coucou-caché, imitations de sons, comptines avec gestes.\n• Regarder des livres en tissu ou en carton ensemble.\n\nVérifiez que les jouets portent le marquage CE et sont adaptés à son âge. Babillage vers 2–4 mois, syllabes (« ba-ba ») entre 4 et 9 mois.",
+      "sources": [
+        {"name": "1000 premiers jours – Les activités avec bébé", "url": "https://www.1000-premiers-jours.fr/fr/les-activites-avec-bebe"},
+        {"name": "1000 premiers jours – Le développement du langage", "url": "https://1000-premiers-jours.fr/fr/le-developpement-du-langage-de-bebe"}
+      ]
+    },
+    {
+      "id": "eveil-9-24",
+      "theme": "eveil",
+      "title": "De 9 mois à 2 ans",
+      "minMonths": 9, "maxMonths": 24,
+      "body": "• Laissez-le bouger librement : ramper, se hisser, marcher à son rythme. La marche arrive en général entre 12 et 18 mois.\n• Jeux d'empilement, de remplissage, cubes, ballons.\n• Lisez-lui des histoires, nommez les objets et les personnes. Les premiers vrais mots arrivent souvent autour d'1 an, et vers 2 ans il associe deux mots.\n• Sorties au parc, ludothèques, bibliothèques, lieux d'accueil parents-enfants (renseignez-vous en mairie ou à la PMI).\n\nParlez au médecin de tout ce qui vous paraît inhabituel, par exemple s'il ne fait pas de gestes pour communiquer (« au revoir », pointer du doigt) ou ne dit pas ses premiers mots.",
+      "sources": [
+        {"name": "1000 premiers jours – Les étapes du développement", "url": "https://www.1000-premiers-jours.fr/fr/les-etapes-du-developpement-de-bebe"},
+        {"name": "HAS – Autisme : rester en alerte", "url": "https://www.has-sante.fr/jcms/pprd_2974213/fr/autisme-de-l-enfant-rester-en-alerte-pour-depister-au-plus-tot"}
+      ]
+    },
+    {
+      "id": "ecrans",
+      "theme": "eveil",
+      "title": "Pas d'écran avant 3 ans",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "La recommandation officielle est de n'exposer aucun enfant de moins de 3 ans aux écrans (télévision, tablette, téléphone), y compris en fond, allumés dans la pièce où il se trouve. C'est désormais interdit dans les crèches et chez les assistantes maternelles.\n\nÀ la place : parler, jouer, lire, bouger ensemble.",
+      "sources": [
+        {"name": "info.gouv.fr – Pas d'écran avant trois ans", "url": "https://www.info.gouv.fr/actualite/pas-decran-avant-trois-ans"},
+        {"name": "1000 premiers jours – Limiter les écrans", "url": "https://www.1000-premiers-jours.fr/fr/limiter-les-ecrans-pour-bebe"}
+      ]
+    },
+    {
+      "id": "chutes",
+      "theme": "securite",
+      "title": "Éviter les chutes",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "• Sur la table à langer : gardez toujours une main sur lui, préparez tout avant.\n• Attachez les harnais (transat, chaise haute, poussette) et ne posez pas le transat en hauteur.\n• Barrières en haut et en bas des escaliers dès qu'il se déplace.\n• Fixez les meubles au mur.",
+      "sources": [
+        {"name": "1000 premiers jours – Éviter les accidents domestiques", "url": "https://1000-premiers-jours.fr/fr/eviter-les-accidents-domestiques-des-enfants"}
+      ]
+    },
+    {
+      "id": "maison-sure",
+      "theme": "securite",
+      "title": "Brûlures, eau, produits : la maison sûre",
+      "minMonths": 0, "maxMonths": 36,
+      "body": "• Jamais seul dans le bain ou près d'un point d'eau.\n• Éloignez-le des plaques, du four, du fer à repasser ; pas de boisson chaude quand il est dans vos bras. Pas de bouillotte dans son lit.\n• Médicaments et produits ménagers rangés en hauteur, fermés, dans leur emballage d'origine.\n• Cache-prises sur les prises électriques.\n• Petits objets (piles bouton, pièces, aimants) hors de portée.",
+      "sources": [
+        {"name": "1000 premiers jours – Éviter les accidents domestiques", "url": "https://1000-premiers-jours.fr/fr/eviter-les-accidents-domestiques-des-enfants"},
+        {"name": "ameli.fr – Brûlures de la peau", "url": "https://www.ameli.fr/assure/sante/urgence/accidents-domestiques/brulures-peau"}
+      ]
+    },
+    {
+      "id": "declaration",
+      "theme": "demarches",
+      "title": "Déclarer la naissance",
+      "minMonths": 0, "maxMonths": 1,
+      "body": "• À la mairie, dans les 5 jours qui suivent la naissance.\n• Puis sur le compte ameli, environ 5 à 8 jours après la déclaration en mairie, pour inscrire bébé sur la carte Vitale.\n• Pensez à prévenir la CAF et votre mutuelle.",
+      "sources": [
+        {"name": "ameli.fr – Déclarer une naissance", "url": "https://www.ameli.fr/assure/adresses-et-contacts/un-changement-de-situation/maternite-et-paternite/declarer-une-naissance"}
+      ]
+    },
+    {
+      "id": "conge-paternite",
+      "theme": "demarches",
+      "title": "Congé de paternité",
+      "minMonths": 0, "maxMonths": 6,
+      "body": "Pour un salarié, après les 3 jours de congé de naissance payés par l'employeur :\n• 25 jours calendaires pour une naissance (32 pour des jumeaux).\n• Dont 4 jours obligatoires tout de suite après le congé de naissance.\n• Les 21 autres jours sont à prendre dans les 6 mois, éventuellement en deux fois (au moins 5 jours chacune).\n\nLes règles diffèrent pour les indépendants : vérifiez selon votre statut.",
+      "sources": [
+        {"name": "ameli.fr – Congé de paternité et d'accueil de l'enfant", "url": "https://www.ameli.fr/assure/droits-demarches/famille/maternite-paternite-adoption/conge-paternite-accueil-enfant"}
+      ]
+    }
+  ]
+}
