@@ -46,6 +46,8 @@ class CoupleCloud {
   CollectionReference<Map<String, dynamic>> get alerts => _couple.collection('alerts');
   CollectionReference<Map<String, dynamic>> get baby => _couple.collection('baby');
   CollectionReference<Map<String, dynamic>> get notes => _couple.collection('notes');
+  CollectionReference<Map<String, dynamic>> get contractions => _couple.collection('contractions');
+  CollectionReference<Map<String, dynamic>> get bag => _couple.collection('bag');
 
   /// Code facile à lire et à dicter (sans 0/O ni 1/I/L).
   static String newCode(math.Random rnd) {

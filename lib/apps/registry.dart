@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../core/launcher.dart';
 import '../core/settings.dart';
 import '../couple/baby_page.dart';
+import '../couple/bag_page.dart';
+import '../couple/contractions_page.dart';
 import '../couple/cloud.dart';
 import '../couple/couple_gate.dart';
 import '../couple/messages_page.dart';
@@ -92,6 +94,32 @@ List<SubApp> buildRegistry() {
         settings,
         'Bébé agenda',
         (CoupleCloud cloud, Person me) => BabyPage(cloud: cloud, me: me),
+      ),
+    ),
+    SubApp(
+      id: 'contractions',
+      title: 'Contractions',
+      subtitle: 'Minuteur partagé',
+      icon: Icons.timer_outlined,
+      category: TileCategory.couple,
+      open: (BuildContext context, AppSettings settings) => openCouple(
+        context,
+        settings,
+        'Contractions',
+        (CoupleCloud cloud, Person me) => ContractionsPage(cloud: cloud, me: me),
+      ),
+    ),
+    SubApp(
+      id: 'valise',
+      title: 'Valise maternité',
+      subtitle: 'Check-list à deux',
+      icon: Icons.luggage_outlined,
+      category: TileCategory.couple,
+      open: (BuildContext context, AppSettings settings) => openCouple(
+        context,
+        settings,
+        'Valise maternité',
+        (CoupleCloud cloud, Person me) => BagPage(cloud: cloud, me: me),
       ),
     ),
     SubApp(

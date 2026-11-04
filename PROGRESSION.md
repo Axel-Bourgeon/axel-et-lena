@@ -78,3 +78,22 @@ Dernière mise à jour : 2026-10-08
 - Idées écartées par Axel : roue de décision (téléphones non reliés), liste de courses (déjà sur Discord).
 - Autres idées proposées : duel de réflexes, « Qui de nous deux ? », feuille de scores de jeux de société, morpion ultime.
 - Icône d'appli personnalisée.
+
+## Plan « grosse update » (décidé le 2026-11-04)
+
+Phase 1 — avant la naissance :
+- [ ] Réglages : « Notre espace » (revoir le code de liaison)
+- [ ] Minuteur de contractions partagé (alerte 5-1-1 : toutes les 5 min pendant 1 h)
+- [ ] Check-list valise maternité partagée
+- [ ] Appli « Conseils bébé » : par âge et par thème, hors ligne, sources officielles citées (ameli, Santé publique France / 1000 premiers jours, HAS, OMS), urgences avec numéros
+
+Phase 2 — pour avril :
+- [ ] Agenda : dodo avec chrono partagé ou heures début/fin ; tétée avec durée et côté
+- [ ] Agenda : stats 24 h / jour / semaine, graphiques, frise des 24 h
+- [ ] Date de naissance réelle → âge du bébé à l'accueil, conseils selon l'âge
+
+Phase 3 :
+- [ ] Croissance (poids, taille, PC) avec courbes OMS
+- [ ] Repérage de tendances
+
+Idées non retenues pour l'instant : prénoms (vote secret), photos du ventre, tour de garde, humeur du jour.

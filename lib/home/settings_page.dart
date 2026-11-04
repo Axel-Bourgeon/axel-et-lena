@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../apps/registry.dart';
 import '../core/settings.dart';
+import '../couple/cloud.dart';
 
 const String kAppVersion = '0.1.0';
 
@@ -79,6 +80,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                   ),
                 ),
+                _sectionTitle(context, 'Notre espace'),
+                const _CoupleSpace(),
                 _sectionTitle(context, 'Thème'),
                 SizedBox(
                   width: double.infinity,
@@ -190,6 +193,42 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         ),
       ),
+    );
+  }
+}
+
+/// Code de l'espace partagé, pour relier un téléphone réinstallé.
+class _CoupleSpace extends StatelessWidget {
+  const _CoupleSpace();
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return FutureBuilder<CoupleCloud?>(
+      future: CoupleCloud.configured ? CoupleCloud.instance() : Future<CoupleCloud?>.value(),
+      builder: (BuildContext context, AsyncSnapshot<CoupleCloud?> snap) {
+        final String? code = snap.data?.coupleId;
+        if (code == null) {
+          return Text(
+            snap.connectionState == ConnectionState.waiting
+                ? '…'
+                : 'Pas encore relié : ouvre Messages, Bébé agenda ou Notes.',
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          );
+        }
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.link),
+          title: Text('${code.substring(0, 5)} ${code.substring(5)}',
+              style: theme.textTheme.titleMedium?.copyWith(letterSpacing: 2, fontWeight: FontWeight.w700)),
+          subtitle: const Text('À saisir sur un téléphone réinstallé (« J\'ai un code »)'),
+          trailing: IconButton(
+            tooltip: 'Copier',
+            icon: const Icon(Icons.copy),
+            onPressed: () => Clipboard.setData(ClipboardData(text: code)),
+          ),
+        );
+      },
     );
   }
 }
