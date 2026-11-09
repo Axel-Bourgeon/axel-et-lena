@@ -64,6 +64,8 @@ Dernière mise à jour : 2026-10-08
 - [x] Section Couple en tête de l'accueil : décompte jusqu'au 1er mai 2027 (naissance) + SA (convention 41 SA) ; Réglages « Ce téléphone est celui de Axel / Léna »
 - [x] Applis couple codées (build-20), désactivées tant que `lib/couple/firebase_config.dart` est vide : Messages (dernière alerte de chacun), Bébé agenda (biberon mL, tétée, couche, dodo, autre, commentaires), Notes partagées
 - [x] Firebase configuré le 2026-11-04 (build-21) : projet `lenaaxel-d83e0`, règles déployées (`npx firebase-tools deploy --only firestore:rules`, CLI connecté sur le PC d'Axel)
+- [x] build-26 (2026-11-09) : Notes (curseur corrigé, Markdown, bouton enregistrer, copier), Devine-tête (écran maintenu allumé), lien 1000 premiers jours, valise « Pour Léna »
+- [ ] Clé API Firebase : alerte GitHub « secret détecté » (non secret par conception) ; restreindre la clé dans Google Cloud (package + SHA-1 CF:AC:6E:6F:3E:25:CB:B0:F9:8E:BA:B1:D0:3B:12:7C:5E:97:D6:B4)
 - [ ] Retours d'Axel et Léna après test sur téléphone
 
 ## Couple / Firebase — décisions
