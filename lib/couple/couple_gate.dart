@@ -186,7 +186,7 @@ class _CoupleGateState extends State<CoupleGate> {
                     if (await LocalBackup.restore(cloud, me.name)) {
                       await widget.settings.reload();
                       if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        ScaffoldMessenger.of(this.context).showSnackBar(
                           const SnackBar(content: Text('Réglages et statistiques restaurés')),
                         );
                       }

@@ -14,7 +14,7 @@ const Map<String, List<String>> kDefaultBag = {
     'Carte de groupe sanguin',
     'Livret de famille ou reconnaissance anticipée',
   ],
-  'Pour la maman': [
+  'Pour Léna': [
     'Chemises de nuit ou grands t-shirts',
     'Peignoir et chaussons',
     'Culottes jetables ou en filet',
@@ -113,6 +113,10 @@ class _BagPageState extends State<BagPage> {
           if (!snap.hasData) return const Center(child: CircularProgressIndicator());
           final docs = snap.data!.docs;
           if (docs.isEmpty && !snap.data!.metadata.isFromCache) _seed();
+          // Ancien nom de section (avant le 2026-11-09).
+          for (final d in docs) {
+            if (d.data()['section'] == 'Pour la maman') d.reference.update({'section': 'Pour Léna'});
+          }
           final sections = <String, List<QueryDocumentSnapshot<Map<String, dynamic>>>>{
             for (final s in kDefaultBag.keys) s: [],
           };

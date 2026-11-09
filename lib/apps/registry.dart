@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../core/launcher.dart';
 import '../core/settings.dart';
@@ -12,6 +13,7 @@ import '../couple/messages_page.dart';
 import '../couple/notes_page.dart';
 import '../games/airhockey/airhockey_page.dart';
 import '../games/cestun10/cestun10_page.dart';
+import '../games/devinetete/devinetete_page.dart';
 import '../games/disque/disque_page.dart';
 import '../games/fourmis/fourmis_page.dart';
 import '../games/motdujour/motdujour_page.dart';
@@ -107,6 +109,24 @@ List<SubApp> buildRegistry() {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const ConseilsPage()),
         );
+      },
+    ),
+    SubApp(
+      id: '1000jours',
+      title: '1000 premiers jours',
+      subtitle: 'Le site officiel',
+      icon: Icons.public,
+      category: TileCategory.couple,
+      open: (BuildContext context, AppSettings settings) async {
+        final bool ok = await launchUrl(
+          Uri.parse('https://www.1000-premiers-jours.fr/fr'),
+          mode: LaunchMode.externalApplication,
+        );
+        if (!ok && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Impossible d'ouvrir le site")),
+          );
+        }
       },
     ),
     SubApp(
@@ -229,6 +249,18 @@ List<SubApp> buildRegistry() {
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const AirHockeyPage()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'devinetete',
+      title: 'Devine-tête',
+      subtitle: 'Qui est sur ton front ?',
+      icon: Icons.face_retouching_natural,
+      category: TileCategory.duoGames,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const DevineTetePage()),
         );
       },
     ),
