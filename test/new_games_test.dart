@@ -158,7 +158,7 @@ void main() {
     test('sons WAV', () {
       final w = glideTone(seconds: 1, rising: true);
       expect(String.fromCharCodes(w.sublist(0, 4)), 'RIFF');
-      expect(w.length, 44 + 22050 * 2);
+      expect(w.length, 44 + 44100 * 2);
       expect(chimeTone().length, greaterThan(44));
     });
   });

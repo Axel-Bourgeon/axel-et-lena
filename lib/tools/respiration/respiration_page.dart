@@ -145,8 +145,9 @@ class _SessionPage extends StatefulWidget {
 
 class _SessionPageState extends State<_SessionPage> with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
-  final AudioPlayer _player = AudioPlayer();
-  late final Uint8List _inSound, _outSound, _chime;
+  // Un lecteur par son, préparé à l'avance : rien n'est coupé en cours de
+  // route et chaque note démarre sans délai.
+  final AudioPlayer _inPlayer = AudioPlayer(), _outPlayer = AudioPlayer(), _chimePlayer = AudioPlayer();
   Duration _elapsed = Duration.zero;
   bool? _lastInhaling;
   bool _done = false;
@@ -158,10 +159,15 @@ class _SessionPageState extends State<_SessionPage> with SingleTickerProviderSta
     super.initState();
     WakelockPlus.enable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    _inSound = glideTone(seconds: widget.rhythm.inhale.toDouble(), rising: true);
-    _outSound = glideTone(seconds: widget.rhythm.exhale.toDouble(), rising: false);
-    _chime = chimeTone();
-    _ticker = createTicker(_onTick)..start();
+    _ticker = createTicker(_onTick);
+    // La séance commence une fois les sons prêts (sinon la 1re note manquerait).
+    Future.wait([
+      _prepare(_inPlayer, glideTone(seconds: widget.rhythm.inhale.toDouble(), rising: true)),
+      _prepare(_outPlayer, glideTone(seconds: widget.rhythm.exhale.toDouble(), rising: false)),
+      _prepare(_chimePlayer, chimeTone()),
+    ]).whenComplete(() {
+      if (mounted) _ticker.start();
+    });
   }
 
   void _onTick(Duration d) {
@@ -174,16 +180,23 @@ class _SessionPageState extends State<_SessionPage> with SingleTickerProviderSta
     final s = breathAt(t, widget.rhythm);
     if (s.inhaling != _lastInhaling) {
       _lastInhaling = s.inhaling;
-      if (widget.signal.plays) _play(s.inhaling ? _inSound : _outSound);
+      if (widget.signal.plays) _play(s.inhaling ? _inPlayer : _outPlayer);
       HapticFeedback.selectionClick();
     }
     setState(() => _elapsed = d);
   }
 
-  Future<void> _play(Uint8List bytes) async {
+  Future<void> _prepare(AudioPlayer p, Uint8List bytes) async {
     try {
-      await _player.stop();
-      await _player.play(BytesSource(bytes, mimeType: 'audio/wav'));
+      await p.setReleaseMode(ReleaseMode.stop);
+      await p.setSource(BytesSource(bytes, mimeType: 'audio/wav'));
+    } catch (_) {}
+  }
+
+  Future<void> _play(AudioPlayer p) async {
+    try {
+      await p.seek(Duration.zero);
+      await p.resume();
     } catch (_) {}
   }
 
@@ -193,14 +206,16 @@ class _SessionPageState extends State<_SessionPage> with SingleTickerProviderSta
       _done = true;
       _elapsed = Duration(seconds: _total.round());
     });
-    _play(_chime);
+    _play(_chimePlayer);
     HapticFeedback.mediumImpact();
   }
 
   @override
   void dispose() {
     _ticker.dispose();
-    _player.dispose();
+    _inPlayer.dispose();
+    _outPlayer.dispose();
+    _chimePlayer.dispose();
     WakelockPlus.disable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/settings.dart';
+import 'attention.dart';
 import 'cloud.dart';
 import 'notifier.dart';
 
@@ -34,7 +35,14 @@ class _MessagesPageState extends State<MessagesPage> {
   bool _sending = false;
 
   @override
+  void initState() {
+    super.initState();
+    Attention.instance.messagesOpened();
+  }
+
+  @override
   void dispose() {
+    Attention.instance.messagesOpened();
     _field.dispose();
     super.dispose();
   }

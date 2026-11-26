@@ -54,6 +54,7 @@ const String _kDiscordKey = 'settings.discordServerId';
 const String _kHiddenTilesKey = 'settings.hiddenTiles';
 const String _kCalendarKey = 'settings.calendarApp';
 const String _kMeKey = 'settings.me';
+const String _kFavoritesKey = 'settings.favorites';
 
 class AppSettings extends ChangeNotifier {
   AppSettings._(
@@ -62,12 +63,14 @@ class AppSettings extends ChangeNotifier {
     required ThemeMode themeMode,
     required String discordServerId,
     required List<String> hiddenTiles,
+    required List<String> favorites,
     required CalendarApp calendarApp,
     required Person? me,
   })  : _seedColor = seedColor,
         _themeMode = themeMode,
         _discordServerId = discordServerId,
         _hiddenTiles = hiddenTiles,
+        _favorites = favorites,
         _calendarApp = calendarApp,
         _me = me;
 
@@ -77,6 +80,7 @@ class AppSettings extends ChangeNotifier {
   ThemeMode _themeMode;
   String _discordServerId;
   List<String> _hiddenTiles;
+  List<String> _favorites;
   CalendarApp _calendarApp;
   Person? _me;
 
@@ -91,6 +95,9 @@ class AppSettings extends ChangeNotifier {
           prefs.getString(_kDiscordKey) ?? kDefaultDiscordServerId,
       hiddenTiles: List<String>.of(
         prefs.getStringList(_kHiddenTilesKey) ?? const <String>[],
+      ),
+      favorites: List<String>.of(
+        prefs.getStringList(_kFavoritesKey) ?? const <String>[],
       ),
       calendarApp: CalendarApp.values.firstWhere(
         (CalendarApp c) => c.name == prefs.getString(_kCalendarKey),
@@ -108,6 +115,7 @@ class AppSettings extends ChangeNotifier {
     _themeMode = fresh._themeMode;
     _discordServerId = fresh._discordServerId;
     _hiddenTiles = fresh._hiddenTiles;
+    _favorites = fresh._favorites;
     _calendarApp = fresh._calendarApp;
     _me = fresh._me;
     notifyListeners();
@@ -153,6 +161,18 @@ class AppSettings extends ChangeNotifier {
   }
 
   bool isHidden(String id) => _hiddenTiles.contains(id);
+
+  /// Applis favorites, dans l'ordre où elles ont été ajoutées.
+  List<String> get favorites => List<String>.unmodifiable(_favorites);
+  bool isFavorite(String id) => _favorites.contains(id);
+
+  Future<void> toggleFavorite(String id) async {
+    _favorites = _favorites.contains(id)
+        ? _favorites.where((String e) => e != id).toList()
+        : <String>[..._favorites, id];
+    notifyListeners();
+    await _prefs.setStringList(_kFavoritesKey, _favorites);
+  }
 
   Future<void> setCalendarApp(CalendarApp value) async {
     if (value == _calendarApp) return;

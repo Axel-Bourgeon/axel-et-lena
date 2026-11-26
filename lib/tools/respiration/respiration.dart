@@ -43,21 +43,59 @@ BreathState breathAt(double t, BreathRhythm r) {
 }
 
 /// Son doux pour une phase : une note qui monte (inspiration) ou descend
-/// (expiration) pendant [seconds], pour suivre le rythme les yeux fermés.
-Uint8List glideTone({required double seconds, required bool rising, int sampleRate = 22050}) {
-  const low = 196.0, high = 294.0; // sol → ré
+/// (expiration), pour suivre le rythme les yeux fermés.
+///
+/// Timbre chaud plutôt qu'un sinus pur : deux voix très légèrement
+/// désaccordées (effet de chœur), quelques harmoniques qui s'éteignent vite,
+/// un vibrato lent et un léger souffle (bruit filtré). La note monte et
+/// descend en douceur, et s'éteint complètement avant la phase suivante :
+/// aucun arrêt brusque.
+Uint8List glideTone({required double seconds, required bool rising, int sampleRate = 44100}) {
+  const low = 220.0, high = 277.2; // la → do#, une tierce : glissé discret
+  const harmonics = [1.0, 0.32, 0.12, 0.05];
   final n = (seconds * sampleRate).round();
-  final samples = Int16List(n);
-  double phase = 0;
+  final out = Float64List(n);
+  final rnd = math.Random(7);
+  final attack = math.min(1.4, seconds * 0.3);
+  final end = seconds * 0.94; // silence juste avant la phase suivante
+  final release = math.min(1.8, seconds * 0.4);
+  final phases = List<double>.filled(harmonics.length * 2, 0);
+  double noise = 0, peak = 1e-9;
   for (int i = 0; i < n; i++) {
-    final x = i / n;
+    final t = i / sampleRate;
+    final x = (t / seconds).clamp(0.0, 1.0);
     final glide = (1 - math.cos(math.pi * x)) / 2;
-    final f = rising ? low + (high - low) * glide : high - (high - low) * glide;
-    phase += 2 * math.pi * f / sampleRate;
-    final tSec = i / sampleRate, left = (n - i) / sampleRate;
-    final env = math.min(1.0, math.min(tSec / 0.5, left / 0.8));
-    final v = (math.sin(phase) * 0.8 + math.sin(2 * phase) * 0.15) * env * 0.35;
-    samples[i] = (v * 32767).round().clamp(-32768, 32767);
+    final f0 = (rising ? low + (high - low) * glide : high - (high - low) * glide) *
+        (1 + 0.003 * math.sin(2 * math.pi * 4.2 * t));
+    double v = 0;
+    for (int h = 0; h < harmonics.length; h++) {
+      for (int voice = 0; voice < 2; voice++) {
+        final f = f0 * (h + 1) + (voice == 0 ? -0.7 : 0.7);
+        final k = h * 2 + voice;
+        phases[k] += 2 * math.pi * f / sampleRate;
+        v += math.sin(phases[k]) * harmonics[h];
+      }
+    }
+    // Souffle : bruit blanc adouci par un filtre passe-bas simple.
+    noise += 0.06 * ((rnd.nextDouble() * 2 - 1) - noise);
+    v = v * 0.5 + noise * 1.6;
+    double env;
+    if (t < attack) {
+      env = (1 - math.cos(math.pi * t / attack)) / 2;
+    } else if (t > end) {
+      env = 0;
+    } else if (t > end - release) {
+      env = (1 + math.cos(math.pi * (t - (end - release)) / release)) / 2;
+    } else {
+      env = 1;
+    }
+    out[i] = v * env;
+    if (out[i].abs() > peak) peak = out[i].abs();
+  }
+  final samples = Int16List(n);
+  final gain = 0.32 / peak;
+  for (int i = 0; i < n; i++) {
+    samples[i] = (out[i] * gain * 32767).round().clamp(-32768, 32767);
   }
   return _wav(samples, sampleRate);
 }

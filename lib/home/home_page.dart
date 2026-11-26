@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../apps/registry.dart';
 import '../core/settings.dart';
 import '../core/together.dart';
+import '../couple/attention.dart';
 import 'settings_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -38,6 +39,14 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               ListTile(
+                leading: Icon(settings.isFavorite(app.id) ? Icons.star : Icons.star_outline),
+                title: Text(settings.isFavorite(app.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  settings.toggleFavorite(app.id);
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.visibility_off_outlined),
                 title: const Text('Masquer cette tuile'),
                 onTap: () {
@@ -62,7 +71,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: ListenableBuilder(
-          listenable: settings,
+          listenable: Listenable.merge(<Listenable>[settings, Attention.instance]),
           builder: (BuildContext context, Widget? child) {
             final List<SubApp> visible = buildRegistry()
                 .where((SubApp a) => !settings.isHidden(a.id))
@@ -119,7 +128,41 @@ class HomePage extends StatelessWidget {
               );
             }
 
+            Widget strip(List<SubApp> items) => _CategoryStrip(
+                  items: items,
+                  isFavorite: settings.isFavorite,
+                  needsAttention: Attention.instance.has,
+                  onTap: (SubApp app) => app.open(context, settings),
+                  onLongPress: (SubApp app) => _showTileMenu(context, app),
+                );
+
+            // Favoris : juste après la partie Couple, dans l'ordre d'ajout.
+            final Map<String, SubApp> byId = <String, SubApp>{for (final SubApp a in visible) a.id: a};
+            final List<SubApp> favorites =
+                settings.favorites.map((String id) => byId[id]).whereType<SubApp>().toList();
+
             for (final TileCategory category in TileCategory.values) {
+              if (category == TileCategory.soloGames && favorites.isNotEmpty) {
+                slivers.add(
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
+                      child: Row(children: <Widget>[
+                        Icon(Icons.star, size: 18, color: scheme.primary),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Favoris',
+                          style: textTheme.titleMedium?.copyWith(
+                            color: scheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ),
+                );
+                slivers.add(SliverToBoxAdapter(child: strip(favorites)));
+              }
               final List<SubApp> items = visible
                   .where((SubApp a) => a.category == category)
                   .toList();
@@ -146,13 +189,7 @@ class HomePage extends StatelessWidget {
                 slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 12)));
               }
               slivers.add(
-                SliverToBoxAdapter(
-                  child: _CategoryStrip(
-                    items: items,
-                    onTap: (SubApp app) => app.open(context, settings),
-                    onLongPress: (SubApp app) => _showTileMenu(context, app),
-                  ),
-                ),
+                SliverToBoxAdapter(child: strip(items)),
               );
             }
 
@@ -172,11 +209,15 @@ class HomePage extends StatelessWidget {
 class _CategoryStrip extends StatelessWidget {
   const _CategoryStrip({
     required this.items,
+    required this.isFavorite,
+    required this.needsAttention,
     required this.onTap,
     required this.onLongPress,
   });
 
   final List<SubApp> items;
+  final bool Function(String id) isFavorite;
+  final bool Function(String id) needsAttention;
   final void Function(SubApp app) onTap;
   final void Function(SubApp app) onLongPress;
 
@@ -215,6 +256,8 @@ class _CategoryStrip extends StatelessWidget {
               final SubApp app = items[i];
               return _Tile(
                 app: app,
+                favorite: isFavorite(app.id),
+                attention: needsAttention(app.id),
                 onTap: () => onTap(app),
                 onLongPress: () => onLongPress(app),
               );
@@ -337,43 +380,108 @@ class _TogetherCounter extends StatelessWidget {
   }
 }
 
-class _Tile extends StatelessWidget {
+class _Tile extends StatefulWidget {
   const _Tile({
     required this.app,
+    required this.favorite,
+    required this.attention,
     required this.onTap,
     required this.onLongPress,
   });
 
   final SubApp app;
+  final bool favorite;
+
+  /// L'autre attend quelque chose de nous : la tuile pulse doucement.
+  final bool attention;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
+
+  @override
+  State<_Tile> createState() => _TileState();
+}
+
+class _TileState extends State<_Tile> with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 1400));
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.attention) _pulse.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(_Tile old) {
+    super.didUpdateWidget(old);
+    if (widget.attention && !_pulse.isAnimating) {
+      _pulse.repeat(reverse: true);
+    } else if (!widget.attention && _pulse.isAnimating) {
+      _pulse.stop();
+      _pulse.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme scheme = theme.colorScheme;
     final TextTheme textTheme = theme.textTheme;
+    final SubApp app = widget.app;
 
-    return Material(
-      color: scheme.primaryContainer.withValues(alpha: 0.45),
-      borderRadius: BorderRadius.circular(24),
-      clipBehavior: Clip.antiAlias,
+    return AnimatedBuilder(
+      animation: _pulse,
+      builder: (BuildContext context, Widget? child) {
+        final double t = Curves.easeInOut.transform(_pulse.value);
+        final Color base = scheme.primaryContainer.withValues(alpha: 0.45);
+        return Material(
+          color: widget.attention ? Color.lerp(base, scheme.primaryContainer, t) : base,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: widget.attention
+                ? BorderSide(color: scheme.primary.withValues(alpha: 0.3 + 0.6 * t), width: 2)
+                : BorderSide.none,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: child,
+        );
+      },
       child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
+        onTap: widget.onTap,
+        onLongPress: widget.onLongPress,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: scheme.surface.withValues(alpha: 0.75),
-                ),
-                child: Icon(app.icon, color: scheme.primary, size: 22),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: scheme.surface.withValues(alpha: 0.75),
+                    ),
+                    child: Icon(app.icon, color: scheme.primary, size: 22),
+                  ),
+                  const Spacer(),
+                  if (widget.attention)
+                    Container(
+                      width: 10,
+                      height: 10,
+                      margin: const EdgeInsets.only(top: 4, right: 4),
+                      decoration: BoxDecoration(shape: BoxShape.circle, color: scheme.primary),
+                    ),
+                  if (widget.favorite) Icon(Icons.star, size: 18, color: scheme.primary),
+                ],
               ),
               const Spacer(),
               Text(

@@ -67,6 +67,7 @@ Dernière mise à jour : 2026-10-08
 - [x] build-26 (2026-11-09) : Notes (curseur corrigé, Markdown, bouton enregistrer, copier), Devine-tête (écran maintenu allumé), lien 1000 premiers jours, valise « Pour Léna »
 - [x] build-27 (2026-11-26) : grossesse comptée depuis les règles (21/07/2026, terme 4 mai 2027, mois de grossesse), Mots en croix (asynchrone, Firestore `games/croix`), Questions de couple (280), Respiration (cohérence cardiaque), Mot du jour partagé (`motdujour/{jour}`, face-à-face) et notifications de jeux (`pings/{expéditeur}`)
 - [x] Nouveau logo (choix d'Axel : ligature A-L épaissie, disque en dégradé horizontal orange → rouille, sans feuille) : `scripts/icon/make_icons.py` → `scripts/android_res/` (icône classique + adaptative + monochrome), copié par patch_android.py
+- [x] build suivant : logo d'Axel (cœur au trait blanc, `scripts/icon/logo_source.png` → make_icons.py), favoris (`settings.favorites`, bandeau sous Couple), tuiles qui clignotent (`lib/couple/attention.dart` : message non lu, tour aux Mots en croix, mot du jour fini par l'autre), son de Respiration adouci
 - [ ] Clé API Firebase : alerte GitHub « secret détecté » (non secret par conception) ; restreindre la clé dans Google Cloud (package + SHA-1 CF:AC:6E:6F:3E:25:CB:B0:F9:8E:BA:B1:D0:3B:12:7C:5E:97:D6:B4)
 - [ ] Retours d'Axel et Léna après test sur téléphone
 

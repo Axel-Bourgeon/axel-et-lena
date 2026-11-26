@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../core/settings.dart';
+import 'attention.dart';
 import 'backup.dart';
 import 'cloud.dart';
 
@@ -41,6 +42,7 @@ class CoupleNotifier {
     if (!CoupleCloud.configured || me == null) return;
     final cloud = await CoupleCloud.instance();
     if (cloud == null || !cloud.paired) return;
+    Attention.instance.start(cloud, me).catchError((Object _) {});
     await _initPlugin();
     await _plugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()

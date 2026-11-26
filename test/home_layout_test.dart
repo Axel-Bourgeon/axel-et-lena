@@ -21,4 +21,19 @@ void main() {
     expect(find.text('Fourmis'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('bandeau Favoris', (tester) async {
+    SharedPreferences.setMockInitialValues({'settings.favorites': <String>['des']});
+    final settings = await AppSettings.load();
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 2.75;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(MaterialApp(home: HomePage(settings: settings)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Favoris'), findsOneWidget);
+    expect(find.text('Dés', skipOffstage: false), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
 }
