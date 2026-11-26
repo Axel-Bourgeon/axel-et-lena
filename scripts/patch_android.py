@@ -5,10 +5,12 @@
 - build.gradle.kts : desugaring (notifications) et minSdk ≥ 23 (Firebase)
 - visibilité des applis externes (<queries>) : HabitKit, Discord, agendas
 - MainActivity avec le canal de lancement d'applis
+- icône de l'appli (scripts/android_res, généré par scripts/icon/make_icons.py)
 """
 import os
 import pathlib
 import re
+import shutil
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -107,7 +109,13 @@ def patch_gradle() -> None:
     GRADLE.write_text(text, encoding="utf-8")
 
 
+def copy_resources() -> None:
+    src = ROOT / "scripts" / "android_res"
+    shutil.copytree(src, MAIN / "res", dirs_exist_ok=True)
+
+
 if __name__ == "__main__":
+    copy_resources()
     patch_manifest()
     patch_activity()
     patch_gradle()
