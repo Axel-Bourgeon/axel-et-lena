@@ -1,14 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/settings.dart';
+import '../../couple/cloud.dart';
+import 'duel.dart';
 import 'engine.dart';
 
 const _green = Color(0xFF4E9A5B);
 const _yellow = Color(0xFFD4A72C);
 
 class MotDuJourPage extends StatefulWidget {
-  const MotDuJourPage({super.key});
+  const MotDuJourPage({super.key, this.settings});
+
+  /// Pour partager ses résultats avec l'autre (si les téléphones sont reliés).
+  final AppSettings? settings;
 
   @override
   State<MotDuJourPage> createState() => _MotDuJourPageState();
@@ -25,6 +33,9 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
   final List<String> _cells = List.filled(WordOfTheDay.length, '');
   int _cursor = 0;
   bool _shake = false;
+  MotDuJourSync? _sync;
+  Map<Person, DuelResult> _todayResults = const {};
+  StreamSubscription<Map<Person, DuelResult>>? _daySub;
 
   String get _key => 'motdujour.$_day';
   bool get _won => _guesses.isNotEmpty && _guesses.last == _answer;
@@ -34,6 +45,52 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _daySub?.cancel();
+    super.dispose();
+  }
+
+  /// Relie le jeu à l'espace du couple, et envoie les parties déjà jouées.
+  Future<void> _initSync() async {
+    final me = widget.settings?.me;
+    if (me == null) return;
+    final cloud = await CoupleCloud.ifPaired();
+    if (cloud == null || !mounted) return;
+    final sync = MotDuJourSync(cloud, me);
+    setState(() => _sync = sync);
+    _daySub = sync.watchDay(_day).listen((r) {
+      if (mounted) setState(() => _todayResults = r);
+    }, onError: (Object _) {});
+    final p = _prefs!;
+    final synced = (p.getStringList('motdujour.synced') ?? const []).toSet();
+    final key = RegExp(r'^motdujour\.(\d+)$');
+    for (final k in p.getKeys()) {
+      final m = key.firstMatch(k);
+      if (m == null || synced.contains(m.group(1))) continue;
+      final day = int.parse(m.group(1)!);
+      final guesses = p.getStringList(k) ?? const [];
+      final answer = _engine!.wordFor(day);
+      final finished = guesses.isNotEmpty && (guesses.last == answer || guesses.length >= WordOfTheDay.maxTries);
+      if (!finished) continue;
+      sync.upload(day, resultOf(guesses, answer)).catchError((Object _) {});
+      synced.add('$day');
+    }
+    await p.setStringList('motdujour.synced', synced.toList());
+  }
+
+  /// Fin de partie : résultat partagé et petite alerte pour l'autre.
+  Future<void> _publish() async {
+    final sync = _sync;
+    if (sync == null) return;
+    final r = resultOf(_guesses, _answer);
+    sync.upload(_day, r).catchError((Object _) {});
+    sync.announce(_day, r).catchError((Object _) {});
+    final p = _prefs!;
+    final synced = (p.getStringList('motdujour.synced') ?? const []).toSet()..add('$_day');
+    await p.setStringList('motdujour.synced', synced.toList());
   }
 
   Future<void> _load() async {
@@ -53,6 +110,7 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
         ..clear()
         ..addAll(prefs.getStringList(_key) ?? const []);
     });
+    _initSync();
   }
 
   /// Place la lettre dans la case sélectionnée, puis va à la prochaine case vide.
@@ -102,7 +160,10 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
       _cursor = 0;
     });
     await _prefs!.setStringList(_key, _guesses);
-    if (_over) await _recordStats();
+    if (_over) {
+      await _recordStats();
+      await _publish();
+    }
   }
 
   void _refuse(String message) {
@@ -164,6 +225,8 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
       appBar: AppBar(
         title: Text('Mot du jour n° ${_day + 1}'),
         actions: [
+          if (_sync != null)
+            IconButton(tooltip: 'Face-à-face', icon: const Icon(Icons.people_outline), onPressed: _openDuel),
           IconButton(tooltip: 'Statistiques', icon: const Icon(Icons.bar_chart), onPressed: _showStats),
           IconButton(tooltip: 'Règles', icon: const Icon(Icons.help_outline), onPressed: _showRules),
         ],
@@ -318,6 +381,10 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
           ),
           const SizedBox(height: 4),
           Text('Nouveau mot demain à minuit.', style: text.bodySmall),
+          if (_sync != null) ...[
+            const SizedBox(height: 10),
+            _otherResult(text),
+          ],
           const SizedBox(height: 12),
           FilledButton.icon(
             onPressed: () async {
@@ -341,6 +408,42 @@ class _MotDuJourPageState extends State<MotDuJourPage> {
         ],
       ),
     );
+  }
+
+  Widget _otherResult(TextTheme text) {
+    final other = _sync!.me.other;
+    final r = _todayResults[other];
+    final mine = resultOf(_guesses, _answer);
+    final String line;
+    if (r == null) {
+      line = "${other.label} n'a pas encore fini.";
+    } else if (!r.won) {
+      line = "${other.label} n'a pas trouvé.";
+    } else {
+      line = '${other.label} a trouvé en ${r.tries} essai${r.tries > 1 ? 's' : ''}.';
+    }
+    final verdict = r == null
+        ? ''
+        : (mine.rank < r.rank ? ' Tu gagnes !' : (mine.rank > r.rank ? ' ${other.label} gagne !' : ' Égalité !'));
+    return InkWell(
+      onTap: _openDuel,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          if (r != null) ...[MiniGrid(r.pattern, cell: 7), const SizedBox(width: 10)],
+          Flexible(child: Text('$line$verdict', style: text.bodyMedium)),
+        ]),
+      ),
+    );
+  }
+
+  void _openDuel() {
+    final sync = _sync;
+    if (sync == null) return;
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => DuelPage(cloud: sync.cloud, me: sync.me, engine: _engine!, today: _day, todayDone: _over),
+    ));
   }
 
   void _showStats() {

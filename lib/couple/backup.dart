@@ -12,7 +12,7 @@ class LocalBackup {
   LocalBackup._();
 
   /// Préfixes des clés sauvegardées.
-  static const List<String> _prefixes = ['settings.', 'motdujour.'];
+  static const List<String> _prefixes = ['settings.', 'motdujour.', 'questions.', 'respi.'];
 
   /// Clés propres à ce téléphone, jamais restaurées depuis la sauvegarde.
   static const Set<String> _excluded = {'settings.me'};

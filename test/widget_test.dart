@@ -8,7 +8,7 @@ void main() {
     final List<String> ids = apps.map((SubApp a) => a.id).toList();
 
     expect(ids.toSet().length, ids.length);
-    expect(ids, containsAll(<String>['fourmis', 'habitkit', 'discord', 'des', 'cestun10', 'disque', 'devinetete', '1000jours']));
+    expect(ids, containsAll(<String>['fourmis', 'habitkit', 'discord', 'des', 'cestun10', 'disque', 'devinetete', '1000jours', 'croix', 'questions', 'respiration']));
   });
 
   test('les catégories ont un libellé français', () {

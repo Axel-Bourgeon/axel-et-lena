@@ -236,7 +236,7 @@ class _BabyCard extends StatelessWidget {
     final ColorScheme scheme = theme.colorScheme;
     final DateTime now = DateTime.now();
     final BabyCountdown b = BabyCountdown(
-      kBabyDueDate,
+      kLastPeriod,
       DateTime.utc(now.year, now.month, now.day),
     );
     return Padding(
@@ -264,7 +264,7 @@ class _BabyCard extends StatelessWidget {
                     if (b.pregnancyLabel.isNotEmpty) ...<Widget>[
                       const SizedBox(height: 2),
                       Text(
-                        '${b.pregnancyLabel} · prévu le 1er mai 2027',
+                        '${b.pregnancyLabel} · ${b.monthLabel}\nPrévu le ${b.dueLabel}',
                         style: theme.textTheme.bodySmall?.copyWith(color: scheme.onTertiaryContainer),
                       ),
                       const SizedBox(height: 8),

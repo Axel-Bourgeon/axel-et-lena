@@ -20,6 +20,7 @@ dependencies:
   workmanager: ^0.10.10
   wakelock_plus: ^1.8.2
   path_provider: ^2.1.6
+  audioplayers: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -32,3 +33,4 @@ flutter:
     - assets/words/
     - assets/disque/
     - assets/conseils/
+    - assets/questions/

@@ -18,12 +18,14 @@ class CoupleNotifier {
   CoupleNotifier._();
 
   static const String _kLastSeen = 'couple.alerts.lastSeen';
+  static const String _kLastPing = 'couple.pings.lastSeen';
   static const String _kMe = 'settings.me';
   static const String _task = 'couple-alerts';
 
   static final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
   static bool _pluginReady = false;
   static StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _sub;
+  static StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _pingSub;
 
   static Future<void> _initPlugin() async {
     if (_pluginReady) return;
@@ -58,6 +60,8 @@ class CoupleNotifier {
     final prefs = await SharedPreferences.getInstance();
     await _sub?.cancel();
     _sub = cloud.alerts.doc(me.other.name).snapshots().listen((s) => _check(s.data(), me.other, prefs));
+    await _pingSub?.cancel();
+    _pingSub = cloud.pings.doc(me.other.name).snapshots().listen((s) => _checkPing(s.data(), prefs));
   }
 
   /// Marque l'alerte reçue comme vue (affichée à l'écran).
@@ -93,6 +97,31 @@ class CoupleNotifier {
     );
   }
 
+  /// Notification des jeux (mot du jour réussi, à toi de jouer…).
+  static Future<void> _checkPing(Map<String, dynamic>? data, SharedPreferences prefs) async {
+    final at = data?['at'];
+    if (at is! Timestamp) return;
+    final ms = at.millisecondsSinceEpoch;
+    final last = prefs.getInt(_kLastPing);
+    await prefs.setInt(_kLastPing, ms > (last ?? 0) ? ms : last!);
+    if (last == null || ms <= last) return;
+    await _initPlugin();
+    await _plugin.show(
+      id: 2,
+      title: (data!['title'] as String?) ?? 'Axel & Léna',
+      body: (data['text'] as String?) ?? '',
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'couple_games',
+          'Jeux à deux',
+          channelDescription: 'Résultats et tours de jeu de l'autre',
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+        ),
+      ),
+    );
+  }
+
   /// Exécuté par Android en arrière-plan, appli fermée.
   static Future<bool> runInBackground() async {
     final prefs = await SharedPreferences.getInstance();
@@ -102,6 +131,8 @@ class CoupleNotifier {
     if (cloud == null || !cloud.paired) return true;
     final snap = await cloud.alerts.doc(me.other.name).get(const GetOptions(source: Source.server));
     await _check(snap.data(), me.other, prefs);
+    final ping = await cloud.pings.doc(me.other.name).get(const GetOptions(source: Source.server));
+    await _checkPing(ping.data(), prefs);
     await LocalBackup.save(cloud, me.name);
     return true;
   }

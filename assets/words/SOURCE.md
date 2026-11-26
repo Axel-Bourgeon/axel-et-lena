@@ -11,3 +11,5 @@ sous la même licence.
 
 Ne pas réordonner ni modifier `answers.txt` sans raison : le mot du jour en
 dépend (les deux téléphones doivent avoir la même version).
+- `dico.txt` : toutes les formes de 2 à 15 lettres (accents retirés, en
+  majuscules), dictionnaire du jeu « Mots en croix ».

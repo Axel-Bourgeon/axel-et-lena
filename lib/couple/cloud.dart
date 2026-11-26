@@ -49,6 +49,26 @@ class CoupleCloud {
   CollectionReference<Map<String, dynamic>> get contractions => _couple.collection('contractions');
   CollectionReference<Map<String, dynamic>> get bag => _couple.collection('bag');
   CollectionReference<Map<String, dynamic>> get backups => _couple.collection('backups');
+  CollectionReference<Map<String, dynamic>> get pings => _couple.collection('pings');
+  CollectionReference<Map<String, dynamic>> get motdujour => _couple.collection('motdujour');
+  CollectionReference<Map<String, dynamic>> get games => _couple.collection('games');
+
+  /// Petite notification automatique pour l'autre (fin de mot du jour, tour
+  /// de jeu…). Un seul document par expéditeur : le dernier remplace l'ancien.
+  Future<void> ping(String fromName, String title, String text) =>
+      pings.doc(fromName).set({'title': title, 'text': text, 'at': Timestamp.now()});
+
+  /// L'espace du couple s'il est déjà relié, sinon null (sans jamais échouer) :
+  /// pour les jeux qui marchent aussi sans le cloud.
+  static Future<CoupleCloud?> ifPaired() async {
+    if (!configured) return null;
+    try {
+      final c = await instance();
+      return c != null && c.paired ? c : null;
+    } catch (_) {
+      return null;
+    }
+  }
 
   /// Code facile à lire et à dicter (sans 0/O ni 1/I/L).
   static String newCode(math.Random rnd) {

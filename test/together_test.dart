@@ -27,12 +27,18 @@ void main() {
   });
 
   test('décompte bébé', () {
-    final b = BabyCountdown(DateTime.utc(2027, 5, 1), DateTime.utc(2026, 11, 3));
-    expect(b.daysLeft, 179);
-    expect(b.label, 'Bébé arrive dans 179 jours');
-    expect(b.pregnancyLabel, '15 SA + 3 j');
-    expect(BabyCountdown(DateTime.utc(2027, 5, 1), DateTime.utc(2027, 4, 30)).label, 'Bébé arrive demain !');
-    expect(BabyCountdown(DateTime.utc(2027, 5, 1), DateTime.utc(2027, 5, 3)).pregnancyLabel, isEmpty);
+    final lmp = DateTime.utc(2026, 7, 21);
+    final b = BabyCountdown(lmp, DateTime.utc(2026, 11, 26));
+    expect(b.dueDate, DateTime.utc(2027, 5, 4));
+    expect(b.daysLeft, 159);
+    expect(b.label, 'Bébé arrive dans 159 jours');
+    expect(b.pregnancyLabel, '18 SA + 2 j');
+    expect(b.monthLabel, '4e mois de grossesse');
+    expect(b.dueLabel, '4 mai 2027');
+    expect(BabyCountdown(lmp, DateTime.utc(2026, 8, 10)).monthLabel, '1er mois de grossesse');
+    expect(BabyCountdown(lmp, DateTime.utc(2027, 5, 3)).label, 'Bébé arrive demain !');
+    expect(BabyCountdown(lmp, DateTime.utc(2027, 5, 1)).month, 9);
+    expect(BabyCountdown(lmp, DateTime.utc(2027, 5, 6)).pregnancyLabel, isEmpty);
   });
 
   test('séparateur de milliers', () {

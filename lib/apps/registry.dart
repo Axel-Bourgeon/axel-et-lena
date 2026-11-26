@@ -13,6 +13,7 @@ import '../couple/messages_page.dart';
 import '../couple/notes_page.dart';
 import '../games/airhockey/airhockey_page.dart';
 import '../games/cestun10/cestun10_page.dart';
+import '../games/croix/croix_page.dart';
 import '../games/devinetete/devinetete_page.dart';
 import '../games/disque/disque_page.dart';
 import '../games/fourmis/fourmis_page.dart';
@@ -20,8 +21,10 @@ import '../games/motdujour/motdujour_page.dart';
 import '../games/picross/picross_page.dart';
 import '../games/pipopipette/pipopipette_page.dart';
 import '../games/puissance4/puissance4_page.dart';
+import '../games/questions/questions_page.dart';
 import '../games/taquin/taquin_page.dart';
 import '../tools/des/des_page.dart';
+import '../tools/respiration/respiration_page.dart';
 
 enum TileCategory {
   couple('Couple'),
@@ -188,7 +191,7 @@ List<SubApp> buildRegistry() {
       category: TileCategory.soloGames,
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
-          MaterialPageRoute<void>(builder: (_) => const MotDuJourPage()),
+          MaterialPageRoute<void>(builder: (_) => MotDuJourPage(settings: settings)),
         );
       },
     ),
@@ -213,6 +216,31 @@ List<SubApp> buildRegistry() {
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const TaquinPage()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'croix',
+      title: 'Mots en croix',
+      subtitle: 'Jeu de lettres, chacun son tour',
+      icon: Icons.spellcheck,
+      category: TileCategory.duoGames,
+      open: (BuildContext context, AppSettings settings) => openCouple(
+        context,
+        settings,
+        'Mots en croix',
+        (CoupleCloud cloud, Person me) => CroixPage(cloud: cloud, me: me),
+      ),
+    ),
+    SubApp(
+      id: 'questions',
+      title: 'Questions de couple',
+      subtitle: 'À se poser à tour de rôle',
+      icon: Icons.question_answer_outlined,
+      category: TileCategory.duoGames,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const QuestionsPage()),
         );
       },
     ),
@@ -297,6 +325,18 @@ List<SubApp> buildRegistry() {
       open: (BuildContext context, AppSettings settings) async {
         await Navigator.of(context).push<void>(
           MaterialPageRoute<void>(builder: (_) => const DesPage()),
+        );
+      },
+    ),
+    SubApp(
+      id: 'respiration',
+      title: 'Respiration',
+      subtitle: 'Bulle et son pour se calmer',
+      icon: Icons.air,
+      category: TileCategory.tools,
+      open: (BuildContext context, AppSettings settings) async {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(builder: (_) => const RespirationPage()),
         );
       },
     ),
