@@ -28,6 +28,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: 3.47.x
           cache: true
 
       # Clé de signature stable (secrets RELEASE_KEYSTORE_*). Sans elle, chaque

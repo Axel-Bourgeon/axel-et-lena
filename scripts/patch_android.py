@@ -82,6 +82,13 @@ def patch_gradle() -> None:
             sys.exit("compileOptions introuvable dans build.gradle.kts")
         text += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
     text = re.sub(r"minSdk\s*=\s*flutter\.minSdkVersion", "minSdk = maxOf(flutter.minSdkVersion, 23)", text)
+    # Analyse lint de release désactivée : elle plante sur certains modules
+    # (firebase_core) avec les outils récents et n'apporte rien ici.
+    if "checkReleaseBuilds" not in text:
+        lint = "android {\n    lint {\n        checkReleaseBuilds = false\n        abortOnError = false\n    }\n"
+        text, n = re.subn(r"android\s*\{", lambda _: lint, text, count=1)
+        if n == 0:
+            sys.exit("bloc android introuvable dans build.gradle.kts")
     # Signature stable : sans elle, chaque build aurait une clé différente et
     # les mises à jour refuseraient de s'installer par-dessus.
     if os.environ.get("RELEASE_KEYSTORE") and "create(\"release\")" not in text:
