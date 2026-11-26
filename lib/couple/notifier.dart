@@ -114,7 +114,7 @@ class CoupleNotifier {
         android: AndroidNotificationDetails(
           'couple_games',
           'Jeux à deux',
-          channelDescription: 'Résultats et tours de jeu de l'autre',
+          channelDescription: "Résultats et tours de jeu de l'autre",
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
         ),
